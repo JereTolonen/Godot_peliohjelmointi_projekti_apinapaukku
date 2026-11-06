@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://3u1hbfbkva0m"]
+
+[ext_resource type="Script" uid="uid://dsvgelr77dw16" path="res://scenes/includes/characters/exploding_character.gd" id="1_w8r64"]
+[ext_resource type="Script" path="res://scenes/includes/characters/banana_model.gd" id="banana"]
+
+[node name="Exploding" type="Node3D"]
+script = ExtResource("1_w8r64")
+
+[node name="Banana" type="Node3D" parent="."]
+script = ExtResource("banana")
+peel_color = Color(0.91, 0.27, 0.18, 1)
+tip_color = Color(0.2, 0.08, 0.05, 1)
+stem_color = Color(0.25, 0.18, 0.12, 1)
+fuse = true

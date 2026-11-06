@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dcmr82vhf26eh"]
+
+[ext_resource type="Script" path="res://scenes/includes/characters/banana_model.gd" id="banana"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_r7xgc"]
+radius = 0.45
+
+[node name="Normal" type="RigidBody3D"]
+
+[node name="Banana" type="Node3D" parent="."]
+script = ExtResource("banana")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_r7xgc")

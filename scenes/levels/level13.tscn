@@ -1,0 +1,370 @@
+[gd_scene format=3 uid="uid://vyl0x4k1qvd7"]
+
+[ext_resource type="Script" uid="uid://cij2y7ji6mtjk" path="res://scenes/game/level.gd" id="1_es4ea"]
+[ext_resource type="PackedScene" uid="uid://camv6xb5puox0" path="res://scenes/includes/slingshot.tscn" id="3_fxbhd"]
+[ext_resource type="Script" uid="uid://eksy3648y532" path="res://scenes/includes/slingshot_controller.gd" id="3_sowsb"]
+[ext_resource type="PackedScene" uid="uid://bxwp0qdfqu1a7" path="res://scenes/includes/characters/enemy_plain.tscn" id="4_b1jq7"]
+[ext_resource type="Script" uid="uid://c30j7tn51hnp2" path="res://scenes/includes/killzone.gd" id="5_j12ka"]
+[ext_resource type="Script" uid="uid://daitovxs4eyqi" path="res://scenes/includes/tutorial_hint.gd" id="5_t8msa"]
+[ext_resource type="PackedScene" uid="uid://dns2ast4vubwu" path="res://scenes/includes/blocks/block.tscn" id="6_c6thi"]
+[ext_resource type="Script" uid="uid://dxm4aurv4fmhv" path="res://scenes/includes/blocks/block.gd" id="7_16q2q"]
+[ext_resource type="Script" uid="uid://c225uff75pa12" path="res://scenes/includes/characters/enemy_plain.gd" id="9_bf1ur"]
+[ext_resource type="PackedScene" uid="uid://4ml8rywkg4pv" path="res://scenes/includes/gravity_well.tscn" id="10_g7hm7"]
+[ext_resource type="Script" uid="uid://i5nn6f2fb8xy" path="res://scenes/includes/gravity_well.gd" id="11_xuust"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sowsb"]
+size = Vector3(7, 1, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t8msa"]
+albedo_color = Color(0.34, 0.32, 0.42, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_c6thi"]
+material = SubResource("StandardMaterial3D_t8msa")
+size = Vector3(7, 1, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_16q2q"]
+albedo_color = Color(0.55, 0.55, 0.72, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_bf1ur"]
+material = SubResource("StandardMaterial3D_16q2q")
+size = Vector3(7, 0.12, 4.02)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g7hm7"]
+size = Vector3(7.5, 1, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xuust"]
+albedo_color = Color(0.34, 0.32, 0.42, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_kq0s3"]
+material = SubResource("StandardMaterial3D_xuust")
+size = Vector3(7.5, 1, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vloh2"]
+albedo_color = Color(0.55, 0.55, 0.72, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_b0gqe"]
+material = SubResource("StandardMaterial3D_vloh2")
+size = Vector3(7.5, 0.12, 4.02)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_18lmw"]
+size = Vector3(0.5, 3.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cq2g3"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.6, 0.8, 1, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_13w8r"]
+material = SubResource("StandardMaterial3D_cq2g3")
+size = Vector3(0.5, 3.5, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mq6yf"]
+size = Vector3(0.5, 3.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y6ef3"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.6, 0.8, 1, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_be38d"]
+material = SubResource("StandardMaterial3D_y6ef3")
+size = Vector3(0.5, 3.5, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qx3q5"]
+size = Vector3(35, 40, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_uuw03"]
+size = Vector3(32, 40, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3w08t"]
+size = Vector3(120, 4, 8)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_4da8d"]
+friction = 0.8
+bounce = 0.05
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gi8ab"]
+albedo_color = Color(0.72, 0.5, 0.28, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_f86k7"]
+material = SubResource("StandardMaterial3D_gi8ab")
+size = Vector3(0.5, 2, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6psd6"]
+size = Vector3(0.5, 2, 1.2)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dfseq"]
+friction = 0.8
+bounce = 0.05
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y4ob2"]
+albedo_color = Color(0.72, 0.5, 0.28, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_80v4r"]
+material = SubResource("StandardMaterial3D_y4ob2")
+size = Vector3(0.5, 2, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bm7e2"]
+size = Vector3(0.5, 2, 1.2)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_131h8"]
+friction = 0.8
+bounce = 0.05
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fulc7"]
+albedo_color = Color(0.72, 0.5, 0.28, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_l8333"]
+material = SubResource("StandardMaterial3D_fulc7")
+size = Vector3(3.3, 0.5, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_heg5p"]
+size = Vector3(3.3, 0.5, 1.2)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ud8da"]
+friction = 0.03
+bounce = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7dttg"]
+albedo_color = Color(0.62, 0.86, 1, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_24t61"]
+material = SubResource("StandardMaterial3D_7dttg")
+size = Vector3(0.5, 1.2, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_c4hhq"]
+size = Vector3(0.5, 1.2, 1.2)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_eaelx"]
+friction = 0.03
+bounce = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lcbda"]
+albedo_color = Color(0.62, 0.86, 1, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_4q5tb"]
+material = SubResource("StandardMaterial3D_lcbda")
+size = Vector3(0.5, 1.2, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i4i7b"]
+size = Vector3(0.5, 1.2, 1.2)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0d7uf"]
+friction = 0.03
+bounce = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cprp5"]
+albedo_color = Color(0.62, 0.86, 1, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_ecwug"]
+material = SubResource("StandardMaterial3D_cprp5")
+size = Vector3(2.5, 0.5, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r0805"]
+size = Vector3(2.5, 0.5, 1.2)
+
+[node name="Level1" type="Node3D" unique_id=287496246]
+script = ExtResource("1_es4ea")
+ammo = PackedStringArray("normal", "splitter", "normal", "exploding", "exploding")
+
+[node name="Slingshot" type="Node3D" parent="." unique_id=862727990 instance=ExtResource("3_fxbhd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.829, 0.938, 0)
+script = ExtResource("3_sowsb")
+
+[node name="Platforms" type="Node3D" parent="." unique_id=496410011]
+
+[node name="Platform1" type="StaticBody3D" parent="Platforms" unique_id=1061515502]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platforms/Platform1" unique_id=1371056637]
+shape = SubResource("BoxShape3D_sowsb")
+
+[node name="Rock" type="MeshInstance3D" parent="Platforms/Platform1" unique_id=1296216082]
+mesh = SubResource("BoxMesh_c6thi")
+
+[node name="Top" type="MeshInstance3D" parent="Platforms/Platform1" unique_id=694580569]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.44, 0)
+mesh = SubResource("BoxMesh_bf1ur")
+
+[node name="Platform2" type="StaticBody3D" parent="Platforms" unique_id=1847654767]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platforms/Platform2" unique_id=332749990]
+shape = SubResource("BoxShape3D_g7hm7")
+
+[node name="Rock" type="MeshInstance3D" parent="Platforms/Platform2" unique_id=654934014]
+mesh = SubResource("BoxMesh_kq0s3")
+
+[node name="Top" type="MeshInstance3D" parent="Platforms/Platform2" unique_id=1784322645]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.44, 0)
+mesh = SubResource("BoxMesh_b0gqe")
+
+[node name="Walls" type="Node3D" parent="." unique_id=1902858022]
+
+[node name="WallLeft" type="StaticBody3D" parent="Walls" unique_id=1123099602]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 2.25, 0)
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallLeft" unique_id=720923609]
+shape = SubResource("BoxShape3D_18lmw")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Walls/WallLeft" unique_id=2042624467]
+mesh = SubResource("BoxMesh_13w8r")
+
+[node name="WallRight" type="StaticBody3D" parent="Walls" unique_id=2056522983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.25, 0)
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallRight" unique_id=2039856057]
+shape = SubResource("BoxShape3D_mq6yf")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Walls/WallRight" unique_id=1417055761]
+mesh = SubResource("BoxMesh_be38d")
+
+[node name="KillZones" type="Node3D" parent="." unique_id=1646832810]
+
+[node name="KillZoneLeft" type="Area3D" parent="KillZones" unique_id=1382424686]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 0, 0)
+script = ExtResource("5_j12ka")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneLeft" unique_id=1464391532]
+shape = SubResource("BoxShape3D_qx3q5")
+
+[node name="KillZoneRight" type="Area3D" parent="KillZones" unique_id=473701488]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 0, 0)
+script = ExtResource("5_j12ka")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneRight" unique_id=598727633]
+shape = SubResource("BoxShape3D_uuw03")
+
+[node name="KillZoneBottom" type="Area3D" parent="KillZones" unique_id=472547275]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10, 0)
+script = ExtResource("5_j12ka")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneBottom" unique_id=1718278330]
+shape = SubResource("BoxShape3D_3w08t")
+
+[node name="Hints" type="CanvasLayer" parent="." unique_id=1608087033]
+script = ExtResource("5_t8msa")
+steps = PackedStringArray("Punaiset planeetat työntävät ammuksia poispäin.")
+
+[node name="Blocks" type="Node3D" parent="." unique_id=2079121714]
+
+[node name="Wood1" parent="Blocks" unique_id=250334520 instance=ExtResource("6_c6thi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.4, 1.5, 0)
+mass = 0.96
+physics_material_override = SubResource("PhysicsMaterial_4da8d")
+script = ExtResource("7_16q2q")
+debris_color = Color(0.72, 0.5, 0.28, 1)
+
+[node name="MeshInstance3D" parent="Blocks/Wood1" index="0" unique_id=1449741122]
+mesh = SubResource("BoxMesh_f86k7")
+
+[node name="CollisionShape3D" parent="Blocks/Wood1" index="1" unique_id=1725876668]
+shape = SubResource("BoxShape3D_6psd6")
+
+[node name="Wood2" parent="Blocks" unique_id=810726778 instance=ExtResource("6_c6thi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, 1.5, 0)
+mass = 0.96
+physics_material_override = SubResource("PhysicsMaterial_dfseq")
+script = ExtResource("7_16q2q")
+debris_color = Color(0.72, 0.5, 0.28, 1)
+
+[node name="MeshInstance3D" parent="Blocks/Wood2" index="0" unique_id=1449741122]
+mesh = SubResource("BoxMesh_80v4r")
+
+[node name="CollisionShape3D" parent="Blocks/Wood2" index="1" unique_id=1725876668]
+shape = SubResource("BoxShape3D_bm7e2")
+
+[node name="Wood3" parent="Blocks" unique_id=421057045 instance=ExtResource("6_c6thi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 2.75, 0)
+mass = 1.584
+physics_material_override = SubResource("PhysicsMaterial_131h8")
+script = ExtResource("7_16q2q")
+debris_color = Color(0.72, 0.5, 0.28, 1)
+
+[node name="MeshInstance3D" parent="Blocks/Wood3" index="0" unique_id=1449741122]
+mesh = SubResource("BoxMesh_l8333")
+
+[node name="CollisionShape3D" parent="Blocks/Wood3" index="1" unique_id=1725876668]
+shape = SubResource("BoxShape3D_heg5p")
+
+[node name="Ice1" parent="Blocks" unique_id=644336697 instance=ExtResource("6_c6thi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 3.6, 0)
+mass = 0.504
+physics_material_override = SubResource("PhysicsMaterial_ud8da")
+script = ExtResource("7_16q2q")
+max_health = 25.0
+debris_color = Color(0.62, 0.86, 1, 1)
+
+[node name="MeshInstance3D" parent="Blocks/Ice1" index="0" unique_id=1449741122]
+mesh = SubResource("BoxMesh_24t61")
+
+[node name="CollisionShape3D" parent="Blocks/Ice1" index="1" unique_id=1725876668]
+shape = SubResource("BoxShape3D_c4hhq")
+
+[node name="Ice2" parent="Blocks" unique_id=970466567 instance=ExtResource("6_c6thi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.4, 3.6, 0)
+mass = 0.504
+physics_material_override = SubResource("PhysicsMaterial_eaelx")
+script = ExtResource("7_16q2q")
+max_health = 25.0
+debris_color = Color(0.62, 0.86, 1, 1)
+
+[node name="MeshInstance3D" parent="Blocks/Ice2" index="0" unique_id=1449741122]
+mesh = SubResource("BoxMesh_4q5tb")
+
+[node name="CollisionShape3D" parent="Blocks/Ice2" index="1" unique_id=1725876668]
+shape = SubResource("BoxShape3D_i4i7b")
+
+[node name="Ice3" parent="Blocks" unique_id=1271269625 instance=ExtResource("6_c6thi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 4.45, 0)
+mass = 1.05
+physics_material_override = SubResource("PhysicsMaterial_0d7uf")
+script = ExtResource("7_16q2q")
+max_health = 25.0
+debris_color = Color(0.62, 0.86, 1, 1)
+
+[node name="MeshInstance3D" parent="Blocks/Ice3" index="0" unique_id=1449741122]
+mesh = SubResource("BoxMesh_ecwug")
+
+[node name="CollisionShape3D" parent="Blocks/Ice3" index="1" unique_id=1725876668]
+shape = SubResource("BoxShape3D_r0805")
+
+[node name="Enemies" type="Node3D" parent="." unique_id=587393106]
+
+[node name="Enemy1" type="RigidBody3D" parent="Enemies" unique_id=1288054795 instance=ExtResource("4_b1jq7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 4.8, 0)
+script = ExtResource("9_bf1ur")
+
+[node name="Enemy2" type="RigidBody3D" parent="Enemies" unique_id=1006581501 instance=ExtResource("4_b1jq7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 0.6, 0)
+script = ExtResource("9_bf1ur")
+
+[node name="Wells" type="Node3D" parent="." unique_id=594975739]
+
+[node name="GravityWell1" type="Node3D" parent="Wells" unique_id=1751009378 instance=ExtResource("10_g7hm7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, 0)
+script = ExtResource("11_xuust")
+strength = -10.0
+field_radius = 6.5
+planet_color = Color(1, 0.35, 0.3, 1)
+
+[editable path="Blocks/Wood1"]
+[editable path="Blocks/Wood2"]
+[editable path="Blocks/Wood3"]
+[editable path="Blocks/Ice1"]
+[editable path="Blocks/Ice2"]
+[editable path="Blocks/Ice3"]

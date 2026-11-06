@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://b7o3dq8bhdnfg"]
+
+[ext_resource type="Script" uid="uid://co384ix4273lu" path="res://scenes/includes/camera_framer.gd" id="1_5gn2c"]
+
+[node name="Camera3D" type="Camera3D" unique_id=1354913868]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 24)
+fov = 30.0
+script = ExtResource("1_5gn2c")
+margin = 0.4
+allow_zoom_in = true

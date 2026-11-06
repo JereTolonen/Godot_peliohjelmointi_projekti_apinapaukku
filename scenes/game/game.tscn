@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dhd4qwbsw6ds0"]
+
+[ext_resource type="PackedScene" uid="uid://cg3m5qnyxjev4" path="res://sky/examples/sky.tscn" id="2_7h61r"]
+[ext_resource type="PackedScene" uid="uid://b7o3dq8bhdnfg" path="res://scenes/game/camera.tscn" id="3_0sr1o"]
+[ext_resource type="Script" uid="uid://cj3rcdovj0mhc" path="res://scenes/game/game_manager.gd" id="4_kelw5"]
+
+[node name="Game" type="Node3D" unique_id=1034827926]
+
+[node name="Sky" parent="." unique_id=1159435916 instance=ExtResource("2_7h61r")]
+
+[node name="Camera3D" parent="." unique_id=1354913868 instance=ExtResource("3_0sr1o")]
+
+[node name="GameController" type="Node3D" parent="." unique_id=1988734412]
+script = ExtResource("4_kelw5")

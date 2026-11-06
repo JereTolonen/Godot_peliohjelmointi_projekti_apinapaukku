@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/includes/characters/heavy_character.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/includes/characters/banana_model.gd" id="banana"]
+
+[node name="Heavy" type="Node3D"]
+script = ExtResource("1_script")
+ability_color = Color(0.85, 0.8, 1, 1)
+
+[node name="Banana" type="Node3D" parent="."]
+script = ExtResource("banana")
+length = 1.5
+thickness = 0.3
+curve = 1.0
+peel_color = Color(0.88, 0.65, 0.15, 1)
+spots = true

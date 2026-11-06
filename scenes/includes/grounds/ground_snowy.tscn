@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://1dv5x8ymdlae"]
+
+[ext_resource type="PackedScene" uid="uid://dtxl5g3j8y3ty" path="res://assets/mesh/ground/block-snow-long.glb" id="1_wq2y1"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ie42k"]
+data = PackedVector3Array(-15.5, 2, 1.5, 15.5, 2, 1.5, -15.5, -2, 1.5, 15.5, 2, 1.5, 15.5, -2, 1.5, -15.5, -2, 1.5, 15.5, 2, -1.5, -15.5, 2, -1.5, 15.5, -2, -1.5, -15.5, 2, -1.5, -15.5, -2, -1.5, 15.5, -2, -1.5, 15.5, 2, 1.5, 15.5, 2, -1.5, 15.5, -2, 1.5, 15.5, 2, -1.5, 15.5, -2, -1.5, 15.5, -2, 1.5, -15.5, 2, -1.5, -15.5, 2, 1.5, -15.5, -2, -1.5, -15.5, 2, 1.5, -15.5, -2, 1.5, -15.5, -2, -1.5, 15.5, 2, 1.5, -15.5, 2, 1.5, 15.5, 2, -1.5, -15.5, 2, 1.5, -15.5, 2, -1.5, 15.5, 2, -1.5, -15.5, -2, 1.5, 15.5, -2, 1.5, -15.5, -2, -1.5, 15.5, -2, 1.5, 15.5, -2, -1.5, -15.5, -2, -1.5)
+
+[node name="GroundPlains" type="Node3D" unique_id=1200791572]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=668296990]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1300915117]
+transform = Transform3D(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
+shape = SubResource("ConcavePolygonShape3D_ie42k")
+
+[node name="block-snow-long2" parent="." unique_id=125959645 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 4.174762, 0, 0, 0, 4, 0, -4, 0)
+
+[node name="block-snow-long3" parent="." unique_id=492046564 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4.8, 0, 0, 0, 4, 0, 0, 0, 3.2, -8, -4, 0)
+
+[node name="block-snow-long4" parent="." unique_id=383840252 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(6, 0, 0, 0, 4, 0, 0, 0, 5.6, 6, -4, 0)
+
+[node name="block-snow-long12" parent="." unique_id=1991489985 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4.276678, 0, 0, 0, 3.8979735, 0, 0, 0, 3.2, 35, -4, 0)
+
+[node name="block-snow-long13" parent="." unique_id=1541560826 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 27, -4, 0)
+
+[node name="block-snow-long14" parent="." unique_id=769346142 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 4.1335764, 0, 0, 0, 4, 41, -4, 0)
+
+[node name="block-snow-long10" parent="." unique_id=140618753 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 4.105275, 0, 0, 0, 3.2, 13, -4, 0)
+
+[node name="block-snow-long11" parent="." unique_id=1945459882 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 3.7521186, 0, 0, 0, 4, 20, -4, 0)
+
+[node name="block-snow-long5" parent="." unique_id=2030302462 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, -30, -4, 0)
+
+[node name="block-snow-long6" parent="." unique_id=1100309626 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(7.2, 0, 0, 0, 3.9065852, 0, 0, 0, 4, -16, -4, 0)
+
+[node name="block-snow-long7" parent="." unique_id=1377026108 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 3.2, -38, -4, 0)
+
+[node name="block-snow-long9" parent="." unique_id=1277305741 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, -43, -4, 0)
+
+[node name="block-snow-long8" parent="." unique_id=1808520160 instance=ExtResource("1_wq2y1")]
+transform = Transform3D(4, 0, 0, 0, 3.6, 0, 0, 0, 3.2, -24, -4, 0)

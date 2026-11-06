@@ -1,0 +1,94 @@
+[gd_scene format=3 uid="uid://b2o2f1la1evi6"]
+
+[ext_resource type="Script" uid="uid://hgu3yhd84o1d" path="res://scenes/ui/points.gd" id="1_rxosw"]
+[ext_resource type="Script" uid="uid://cwqjrq3uy7wjl" path="res://scenes/ui/popup_sphere.gd" id="2_vomeb"]
+
+[node name="Points" type="CanvasLayer" unique_id=287581480]
+script = ExtResource("1_rxosw")
+
+[node name="Popup" type="Control" parent="." unique_id=1511673569]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Sphere1" type="Control" parent="Popup" unique_id=373137999]
+anchors_preset = 0
+offset_left = -140.0
+offset_top = -5.0
+offset_right = -140.0
+offset_bottom = -5.0
+mouse_filter = 2
+script = ExtResource("2_vomeb")
+radius = 54.0
+
+[node name="Sphere2" type="Control" parent="Popup" unique_id=2112958954]
+anchors_preset = 0
+offset_left = 135.0
+offset_top = -25.0
+offset_right = 135.0
+offset_bottom = -25.0
+mouse_filter = 2
+script = ExtResource("2_vomeb")
+radius = 46.0
+color = Color(0.55, 0.95, 0.35, 0.9)
+
+[node name="Sphere3" type="Control" parent="Popup" unique_id=1304712510]
+anchors_preset = 0
+offset_left = -45.0
+offset_top = -62.0
+offset_right = -45.0
+offset_bottom = -62.0
+mouse_filter = 2
+script = ExtResource("2_vomeb")
+radius = 34.0
+color = Color(0.15, 0.7, 0.45, 0.9)
+
+[node name="Sphere4" type="Control" parent="Popup" unique_id=1644792686]
+anchors_preset = 0
+offset_left = 40.0
+offset_top = 42.0
+offset_right = 40.0
+offset_bottom = 42.0
+mouse_filter = 2
+script = ExtResource("2_vomeb")
+radius = 42.0
+color = Color(0.7, 1, 0.6, 0.9)
+
+[node name="Sphere5" type="Control" parent="Popup" unique_id=283747834]
+anchors_preset = 0
+offset_left = -195.0
+offset_top = 38.0
+offset_right = -195.0
+offset_bottom = 38.0
+mouse_filter = 2
+script = ExtResource("2_vomeb")
+radius = 26.0
+
+[node name="Sphere6" type="Control" parent="Popup" unique_id=1797077312]
+anchors_preset = 0
+offset_left = 195.0
+offset_top = 35.0
+offset_right = 195.0
+offset_bottom = 35.0
+mouse_filter = 2
+script = ExtResource("2_vomeb")
+radius = 28.0
+color = Color(0.55, 0.95, 0.35, 0.9)
+
+[node name="Label" type="Label" parent="Popup" unique_id=794650867]
+layout_mode = 0
+offset_left = -300.0
+offset_top = -100.0
+offset_right = 300.0
+offset_bottom = 100.0
+pivot_offset = Vector2(300, 100)
+theme_override_colors/font_color = Color(0.2, 0.9, 0.25, 1)
+theme_override_colors/font_shadow_color = Color(0, 0.3, 0.05, 0.6)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 6
+theme_override_constants/outline_size = 18
+theme_override_font_sizes/font_size = 96
+text = "+500"
+horizontal_alignment = 1
+vertical_alignment = 1

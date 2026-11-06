@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://d4m8hor0ityrk"]
+
+[ext_resource type="Script" uid="uid://co384ix4273lu" path="res://scenes/includes/camera_framer.gd" id="1_cvpoc"]
+
+[node name="Camera" type="Camera3D" unique_id=889250325]
+script = ExtResource("1_cvpoc")

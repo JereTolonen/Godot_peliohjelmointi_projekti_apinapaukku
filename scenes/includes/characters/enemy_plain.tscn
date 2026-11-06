@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bxwp0qdfqu1a7"]
+
+[ext_resource type="Script" uid="uid://c225uff75pa12" path="res://scenes/includes/characters/enemy_plain.gd" id="1_r7xgc"]
+[ext_resource type="PackedScene" uid="uid://b5jsxf0pt538v" path="res://assets/mesh/characters/animal-monkey.glb" id="1_tsol2"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_p2cu0"]
+
+[node name="EnemyS" type="RigidBody3D" unique_id=1288054795]
+script = ExtResource("1_r7xgc")
+
+[node name="animal-monkey2" parent="." unique_id=2067562491 instance=ExtResource("1_tsol2")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=70246870]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0.79298735, 0)
+shape = SubResource("SphereShape3D_p2cu0")

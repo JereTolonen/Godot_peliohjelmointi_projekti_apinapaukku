@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/includes/characters/splitter_character.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/includes/characters/banana_model.gd" id="banana"]
+
+[node name="Splitter" type="Node3D"]
+script = ExtResource("1_script")
+ability_color = Color(0.3, 0.65, 1, 1)
+
+[node name="Banana" type="Node3D" parent="."]
+script = ExtResource("banana")
+length = 0.95
+thickness = 0.17
+count = 3

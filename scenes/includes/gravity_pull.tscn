@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cppcmhi5nsvjq"]
+
+[ext_resource type="Script" uid="uid://w2u6ojckwnpq" path="res://scenes/includes/gravity_pull.gd" id="1_owv68"]
+[ext_resource type="Shader" uid="uid://bihslpqspw1k8" path="res://scenes/includes/gravity_pull.gdshader" id="2_ew2al"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w6gqa"]
+render_priority = 0
+shader = ExtResource("2_ew2al")
+shader_parameter/core_color = Color(0.18, 0.08, 0.45, 1)
+shader_parameter/border_color = Color(0.35, 0.95, 1, 1)
+shader_parameter/heartbeat_color = Color(1, 0.25, 0.5, 1)
+shader_parameter/border_width = 0.28
+shader_parameter/border_softness = 0.04
+shader_parameter/border_alpha = 0.95
+shader_parameter/border_glow = 1.5
+shader_parameter/core_alpha = 0.35
+shader_parameter/stripe_count = 14.0
+shader_parameter/stripe_speed = 1.5
+shader_parameter/stripe_intensity = 0.25
+shader_parameter/heartbeat_bpm = 70.0
+shader_parameter/heartbeat_scale = 0.08
+shader_parameter/heartbeat_glow = 1.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_thv1c"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dd0lh"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ew2al"]
+radius = 4.05
+
+[node name="GravityPull" type="Node3D" unique_id=238103512]
+script = ExtResource("1_owv68")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1760482285]
+material_override = SubResource("ShaderMaterial_w6gqa")
+transparency = 1.0
+cast_shadow = 0
+mesh = SubResource("SphereMesh_thv1c")
+surface_material_override/0 = SubResource("StandardMaterial3D_dd0lh")
+
+[node name="PullArea" type="Area3D" parent="." unique_id=1106035689]
+top_level = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PullArea" unique_id=541668161]
+shape = SubResource("SphereShape3D_ew2al")

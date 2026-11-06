@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://camv6xb5puox0"]
+
+[ext_resource type="Script" uid="uid://eksy3648y532" path="res://scenes/includes/slingshot_controller.gd" id="1_p2cu0"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_thv1c"]
+size = Vector3(0.28027344, 1, 2.3876953)
+
+[node name="Slingshot" type="Node3D" unique_id=862727990]
+script = ExtResource("1_p2cu0")
+
+[node name="LaunchPoint" type="Marker3D" parent="." unique_id=1262087788]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=607998076]
+shape = SubResource("BoxShape3D_thv1c")

@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://4ml8rywkg4pv"]
+
+[ext_resource type="Script" uid="uid://i5nn6f2fb8xy" path="res://scenes/includes/gravity_well.gd" id="1_5gmhk"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_8ad1k"]
+radial_segments = 48
+rings = 24
+
+[sub_resource type="SphereMesh" id="SphereMesh_ndkok"]
+radial_segments = 48
+rings = 24
+
+[node name="GravityWell" type="Node3D" unique_id=1751009378]
+script = ExtResource("1_5gmhk")
+
+[node name="Planet" type="MeshInstance3D" parent="." unique_id=1143537468]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 0, 0, 0)
+mesh = SubResource("SphereMesh_8ad1k")
+
+[node name="Field" type="MeshInstance3D" parent="." unique_id=304442224]
+transform = Transform3D(14, 0, 0, 0, 14, 0, 0, 0, 14, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ndkok")
