@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/includes/characters/bouncy_character.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/includes/characters/banana_model.gd" id="banana"]
+
+[node name="Bouncy" type="Node3D"]
+script = ExtResource("1_script")
+ability_color = Color(0.69, 0.42, 1, 1)
+
+[node name="Banana" type="Node3D" parent="."]
+script = ExtResource("banana")
+length = 1.05
+thickness = 0.22
+curve = 1.35
+peel_color = Color(0.69, 0.42, 1, 1)
+tip_color = Color(0.3, 0.12, 0.45, 1)
+stem_color = Color(0.45, 0.2, 0.6, 1)

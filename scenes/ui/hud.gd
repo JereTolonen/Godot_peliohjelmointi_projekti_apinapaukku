@@ -180,8 +180,8 @@ func _process(delta: float) -> void:
 			_score_label.text = str(int(_shown_score))
 		if _level_label.text == "" or delta > 0.0:
 			_level_label.text = "TASO %d" % int(director.get("current_level_number"))
-			var theme := String(director.get("current_theme"))
-			_world_label.text = String(ArtStyle.THEMES.get(theme, {"title": ""})["title"]).to_upper()
+			var number := int(director.get("current_level_number"))
+			_world_label.text = String(ArtStyle.world_for_level(number - 1)["title"])
 
 	_update_tap_prompt(delta)
 

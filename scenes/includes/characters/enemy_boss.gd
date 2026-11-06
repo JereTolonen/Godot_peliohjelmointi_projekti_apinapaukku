@@ -35,6 +35,8 @@ const BOSS_LOW_LINES := ["Voi ei...", "Armoa!", "Okei, okei!", "Mä luovutan... 
 @export var first_jump_delay: float = 2.5
 
 var health: int = 0
+## Kun true, osumat eivät vahingoita (kristallikilpi).
+var shielded: bool = false
 
 var _hit_cooldown_left: float = 0.0
 var _visual: Node3D = null
@@ -205,6 +207,15 @@ func kill() -> void:
 
 func _damage(amount: int) -> void:
 	if not _alive or _hit_cooldown_left > 0.0:
+		return
+	# Kristallikilpi (boss_ability.gd "shield") torjuu osumat.
+	if shielded:
+		_hit_cooldown_left = hit_cooldown
+		_call_wobble("hurt")
+		SpeechBubble.say(self, "Kilpi!", 0.9, popup_offset.y, "")
+		var sounds := get_node_or_null("/root/SoundManager")
+		if sounds != null:
+			sounds.call("play", "hit_ice", 0.0, 0.1, 0.1, 1.3)
 		return
 	_hit_cooldown_left = hit_cooldown
 	health -= amount

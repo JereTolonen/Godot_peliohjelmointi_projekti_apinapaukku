@@ -240,6 +240,11 @@ func _focus_first(button: Control) -> void:
 
 # --- Main menu ------------------------------------------------------------------
 
+## True selainversiossa (HTML5-vienti).
+func _is_web_build() -> bool:
+	return OS.has_feature("web")
+
+
 func _game_title() -> String:
 	var raw := String(ProjectSettings.get_setting("application/config/name", "Peli"))
 	return raw.replace("_", " ").strip_edges().to_upper()
@@ -268,7 +273,23 @@ func _build_main() -> void:
 	logo.add_theme_constant_override("outline_size", 22)
 	logo.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.35))
 	logo.add_theme_constant_override("shadow_offset_y", 8)
-	column.add_child(logo)
+	if _is_web_build():
+		# Web-versiossa logon viereen kallistettu "WEB"-merkki.
+		var logo_row := HBoxContainer.new()
+		logo_row.alignment = BoxContainer.ALIGNMENT_CENTER
+		logo_row.add_theme_constant_override("separation", 14)
+		logo_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		logo_row.add_child(logo)
+		var web := Label.new()
+		web.text = "WEB"
+		MenuStyle.style_ribbon(web, 30, "accent")
+		web.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		web.rotation_degrees = -8.0
+		web.resized.connect(func() -> void: web.pivot_offset = web.size * 0.5)
+		logo_row.add_child(web)
+		column.add_child(logo_row)
+	else:
+		column.add_child(logo)
 	var tag := Label.new()
 	tag.text = "Kaada kaikki apinat!"
 	MenuStyle.style_ribbon(tag, 24, "danger")
@@ -397,7 +418,7 @@ func _build_levels() -> void:
 	var got := 0
 	for i in range(from, to):
 		got += Progress.stars(i)
-	sub.text = "%s  •  %s  •  ★ %d / %d" % [String(ArtStyle.THEMES.get(world.get("theme", "meadow"), {"title": ""})["title"]), world["subtitle"], got, (to - from) * 3]
+	sub.text = "%s  •  POMO: %s  •  ★ %d / %d" % [world["subtitle"], world.get("boss", "?"), got, (to - from) * 3]
 	MenuStyle.style_ink(sub, 18)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	content.add_child(sub)
@@ -455,7 +476,8 @@ func _make_tile(index: int, world: Dictionary, is_next: bool) -> Button:
 	var tile := Button.new()
 	tile.custom_minimum_size = tile_size
 	tile.text = str(index + 1)
-	tile.tooltip_text = _names[index] if index < _names.size() else ""
+	var lname := ArtStyle.level_name(index + 1)
+	tile.tooltip_text = lname if lname != "" else (_names[index] if index < _names.size() else "")
 	var completed := Progress.is_completed(index)
 	var unlocked := Progress.is_unlocked(index)
 	var variant := "wood"
@@ -472,6 +494,23 @@ func _make_tile(index: int, world: Dictionary, is_next: bool) -> Button:
 			sb.content_margin_bottom += 26.0
 	tile.pressed.connect(func() -> void: _start(index))
 	Juice.attach(tile)
+	# Pomotaso: punainen "POMO"-merkki tiilen yläreunaan.
+	if ArtStyle.is_boss_level(index + 1):
+		var badge := Label.new()
+		badge.text = "POMO"
+		MenuStyle.style_ribbon(badge, 14, "danger")
+		var bsb := badge.get_theme_stylebox("normal").duplicate() as StyleBoxFlat
+		bsb.content_margin_left = 10.0
+		bsb.content_margin_right = 10.0
+		bsb.content_margin_top = 2.0
+		bsb.content_margin_bottom = 4.0
+		badge.add_theme_stylebox_override("normal", bsb)
+		badge.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+		badge.offset_top = -14
+		badge.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		badge.z_index = 1
+		tile.add_child(badge)
 	if not unlocked:
 		tile.disabled = true
 		tile.text = ""
@@ -642,7 +681,8 @@ func _build_pause() -> void:
 	var director := _director()
 	var number := int(director.get("current_level_number")) if director != null else _current_index + 1
 	var theme := String(director.get("current_theme")) if director != null else "meadow"
-	level.text = "TASO %d  •  %s" % [number, String(ArtStyle.THEMES.get(theme, {"title": ""})["title"]).to_upper()]
+	var lname := ArtStyle.level_name(number)
+	level.text = "TASO %d  •  %s" % [number, lname.to_upper() if lname != "" else String(ArtStyle.THEMES.get(theme, {"title": ""})["title"]).to_upper()]
 	MenuStyle.style_ink(level, 20)
 	level.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	content.add_child(level)

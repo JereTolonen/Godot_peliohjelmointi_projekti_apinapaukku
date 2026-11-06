@@ -308,7 +308,8 @@ func _dress_level(level: Node) -> void:
 	_skin_wells(level)
 	_skin_slingshot(level)
 	_add_ambient_particles(dressing, theme)
-	_show_banner(number, ArtStyle.THEMES[theme]["title"])
+	var lname := ArtStyle.level_name(number)
+	_show_banner(number, lname if lname != "" else String(ArtStyle.THEMES[theme]["title"]))
 	level_dressed.emit(number, theme)
 
 
@@ -716,7 +717,9 @@ func _build_volcano_extras(parent: Node3D, rng: RandomNumberGenerator) -> void:
 
 ## Taivaansaaret: pilvimeri alapuolella ja kaukaisia leijuvia saaria.
 func _build_sky_backdrop(parent: Node3D, theme: String, rng: RandomNumberGenerator) -> void:
-	var cloud_mat := ArtStyle.soft_material(Color("c9d8ee"), Color(1.08, 1.08, 1.08), false, 4.0, -12.0, 0.0)
+	# Teema voi antaa pilvimerelle oman värin (apokalypsin myrskypilvet).
+	var cloud_col: Color = ArtStyle.THEMES[theme].get("cloud_sea", Color("c9d8ee"))
+	var cloud_mat := ArtStyle.soft_material(cloud_col, Color(1.08, 1.08, 1.08), false, 4.0, -12.0, 0.0)
 	var sea := MultiMesh.new()
 	sea.transform_format = MultiMesh.TRANSFORM_3D
 	sea.mesh = Props.cloud_mesh(2)
@@ -925,6 +928,12 @@ func _scatter_theme_props(parent: Node3D, theme: String, rng: RandomNumberGenera
 				parent.add_child(moon)
 		"sky":
 			pass
+		"desert":
+			_scatter_desert(parent, theme, rng)
+		"candy":
+			_scatter_candy(parent, rng)
+		"apocalypse":
+			_scatter_apocalypse(parent, rng)
 		"glacier":
 			_scatter_kit(parent, "tree-pine-snow", 9, Vector2(4.0, 5.5), rng, true)
 			_scatter_kit(parent, "rocks", 10, Vector2(0.5, 0.9), rng)
@@ -939,6 +948,174 @@ func _scatter_theme_props(parent: Node3D, theme: String, rng: RandomNumberGenera
 				crystal.rotation.y = rng.randf() * TAU
 				crystal.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				parent.add_child(crystal)
+
+
+## Aavikko: pyramidit horisontissa, mesat, kaktukset ja kivet.
+func _scatter_desert(parent: Node3D, theme: String, rng: RandomNumberGenerator) -> void:
+	var sand_mat := ArtStyle.soft_material(Color("e8b066"), Color("ffe0a8"), false, 14.0, -2.0)
+	for i in 4:
+		var pyr := MeshInstance3D.new()
+		var cone := CylinderMesh.new()
+		cone.top_radius = 0.0
+		cone.bottom_radius = 1.0
+		cone.height = 1.0
+		cone.radial_segments = 4
+		cone.rings = 1
+		pyr.mesh = cone
+		pyr.material_override = sand_mat
+		var s := rng.randf_range(14.0, 26.0)
+		pyr.scale = Vector3(s, s * 0.75, s)
+		pyr.position = Vector3([-70.0, -30.0, 45.0, 85.0][i] + rng.randf_range(-8.0, 8.0), -2.6 + s * 0.375, rng.randf_range(-70.0, -95.0))
+		pyr.rotation.y = PI * 0.25
+		pyr.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(pyr)
+	var mesa_mat := ArtStyle.terrain_material(theme, -1000.0, 0.08, "mesa")
+	for i in 4:
+		var mesa := MeshInstance3D.new()
+		mesa.mesh = Props.mesa_mesh(i + 7)
+		mesa.material_override = mesa_mat
+		var s := rng.randf_range(1.2, 2.0)
+		mesa.scale = Vector3(s, s, s)
+		mesa.position = Vector3(rng.randf_range(-90.0, 90.0), -2.6, rng.randf_range(-40.0, -60.0))
+		mesa.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(mesa)
+	for i in 12:
+		var cactus := MeshInstance3D.new()
+		cactus.mesh = Props.cactus_mesh(i % 3 + 1)
+		cactus.position = Vector3(_side_x(rng), 0.25, rng.randf_range(-5.0, -12.5))
+		cactus.scale = Vector3.ONE * rng.randf_range(0.8, 1.4)
+		cactus.rotation.y = rng.randf() * TAU
+		parent.add_child(cactus)
+	_scatter_kit(parent, "rocks", 10, Vector2(0.6, 1.1), rng)
+	_scatter_kit(parent, "stones", 12, Vector2(0.3, 0.5), rng)
+
+
+## Karkkimaa: tikkarit, karkkikepit, kumikarkit ja suklaakivet.
+func _scatter_candy(parent: Node3D, rng: RandomNumberGenerator) -> void:
+	var colors := [Color("ff5aa8"), Color("ffd64a"), Color("66d0f1"), Color("9b6bff"), Color("70d52f"), Color("ff8a3d")]
+	var stick_mat := ArtStyle.flat_material(Color("fff6e8"), 0.5)
+	for i in 12:
+		var root := Node3D.new()
+		root.position = Vector3(_side_x(rng), 0.25, rng.randf_range(-5.0, -13.0))
+		var s := rng.randf_range(0.9, 1.8)
+		root.scale = Vector3.ONE * s
+		parent.add_child(root)
+		var stick := MeshInstance3D.new()
+		var cyl := CylinderMesh.new()
+		cyl.top_radius = 0.07
+		cyl.bottom_radius = 0.07
+		cyl.height = 2.4
+		cyl.radial_segments = 8
+		stick.mesh = cyl
+		stick.material_override = stick_mat
+		stick.position.y = 1.2
+		root.add_child(stick)
+		var candy := MeshInstance3D.new()
+		var disc := CylinderMesh.new()
+		disc.top_radius = 0.75
+		disc.bottom_radius = 0.75
+		disc.height = 0.22
+		disc.radial_segments = 20
+		candy.mesh = disc
+		candy.material_override = ArtStyle.soft_material(colors[i % colors.size()], Color.WHITE)
+		candy.rotation.x = PI * 0.5
+		candy.position.y = 2.6
+		root.add_child(candy)
+		var swirl := MeshInstance3D.new()
+		var tor := TorusMesh.new()
+		tor.inner_radius = 0.32
+		tor.outer_radius = 0.46
+		tor.rings = 20
+		tor.ring_segments = 8
+		swirl.mesh = tor
+		swirl.material_override = ArtStyle.flat_material(Color.WHITE, 0.4)
+		swirl.rotation.x = PI * 0.5
+		swirl.position = Vector3(0.0, 2.6, 0.12)
+		root.add_child(swirl)
+	# Kumikarkit (puolipallot).
+	for i in 22:
+		var drop := MeshInstance3D.new()
+		var sp := SphereMesh.new()
+		sp.radius = 0.5
+		sp.height = 1.0
+		sp.is_hemisphere = true
+		sp.radial_segments = 14
+		sp.rings = 6
+		drop.mesh = sp
+		drop.material_override = ArtStyle.soft_material(colors[(i * 7) % colors.size()], Color.WHITE)
+		drop.position = Vector3(_side_x(rng), 0.25, rng.randf_range(-3.5, -12.0))
+		drop.scale = Vector3.ONE * rng.randf_range(0.5, 1.2)
+		parent.add_child(drop)
+	# Karkkikepit taustalla.
+	var red := ArtStyle.flat_material(Color("ff4a5a"), 0.4)
+	var white := ArtStyle.flat_material(Color("fff6f0"), 0.4)
+	for i in 8:
+		var cane := Node3D.new()
+		cane.position = Vector3(rng.randf_range(-70.0, 80.0), -2.6, rng.randf_range(-25.0, -45.0))
+		var s := rng.randf_range(2.5, 4.5)
+		cane.scale = Vector3.ONE * s
+		parent.add_child(cane)
+		for j in 6:
+			var seg := MeshInstance3D.new()
+			var c := CylinderMesh.new()
+			c.top_radius = 0.35
+			c.bottom_radius = 0.35
+			c.height = 1.0
+			c.radial_segments = 10
+			seg.mesh = c
+			seg.material_override = red if j % 2 == 0 else white
+			seg.position.y = 0.5 + float(j)
+			seg.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			cane.add_child(seg)
+		var hook := MeshInstance3D.new()
+		var t := TorusMesh.new()
+		t.inner_radius = 0.6
+		t.outer_radius = 1.3
+		hook.mesh = t
+		hook.material_override = red
+		hook.rotation.x = PI * 0.5
+		hook.position = Vector3(0.95, 6.0, 0.0)
+		hook.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		cane.add_child(hook)
+
+
+## Apokalypsi: halkeillut kuu, leijuvat kivenjärkäleet ja kultaiset kristallit.
+func _scatter_apocalypse(parent: Node3D, rng: RandomNumberGenerator) -> void:
+	for half in 2:
+		var moon := MeshInstance3D.new()
+		var sp := SphereMesh.new()
+		sp.radius = 1.0
+		sp.height = 2.0
+		sp.is_hemisphere = true
+		sp.radial_segments = 32
+		sp.rings = 12
+		moon.mesh = sp
+		moon.material_override = ArtStyle.planet_material(Color("d8c0a8"), 3.0 + float(half), 0.15)
+		moon.scale = Vector3.ONE * 26.0
+		moon.rotation = Vector3(0.0, 0.0, PI * 0.5 + float(half) * PI + 0.25)
+		moon.position = Vector3(-60.0 + float(half) * 14.0, 62.0 - float(half) * 6.0, -220.0)
+		moon.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(moon)
+	var rock_mat := ArtStyle.soft_material(Color("3e2670"), Color("7a5ab0"), false, 4.0, -2.0)
+	var gold := ArtStyle.flat_material(Color("ffd64a"), 0.3, 1.6)
+	for i in 16:
+		var rock := MeshInstance3D.new()
+		rock.mesh = Props.asteroid_mesh(i % 6 + 30)
+		rock.material_override = rock_mat
+		var s := rng.randf_range(1.5, 6.0)
+		rock.scale = Vector3(s, s * 0.7, s)
+		rock.position = Vector3(rng.randf_range(-80.0, 90.0), rng.randf_range(-4.0, 30.0), rng.randf_range(-25.0, -70.0))
+		rock.rotation = Vector3(rng.randf() * TAU, rng.randf() * TAU, 0.0)
+		rock.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(rock)
+		_spinners.append([rock, Vector3.UP, rng.randf_range(-0.15, 0.15)])
+		if i % 3 == 0:
+			var c := MeshInstance3D.new()
+			c.mesh = Props.crystal_mesh()
+			c.material_override = gold
+			c.position = Vector3(0.0, 0.6, 0.0)
+			c.scale = Vector3.ONE * 0.5
+			rock.add_child(c)
 
 
 ## X-koordinaatti taustarekvisiitalle: painottuu pelialueen sivuille, jotta
@@ -1384,7 +1561,7 @@ func _show_banner(number: int, title: String) -> void:
 	layer.add_child(banner)
 	var big := Label.new()
 	big.text = "TASO %d" % number
-	MenuStyle.style_ribbon(big, 46)
+	MenuStyle.style_ribbon(big, 46, "danger" if ArtStyle.is_boss_level(number) else "accent")
 	banner.add_child(big)
 	var small := Label.new()
 	small.text = title.to_upper()

@@ -15,6 +15,14 @@ extends Node3D
 @export var eye_size: float = 0.25
 ## Kielen väri.
 @export var tongue_color: Color = Color("ff5f8f")
+## Turkin väri (apinamallin tekstuuri kerrotaan tällä). Valkoinen = ennallaan.
+@export var fur_tint: Color = Color.WHITE
+## Asuste: none, moss, ice, glasses, candy, flame, king.
+@export_enum("none", "moss", "ice", "glasses", "candy", "flame", "king", "astronaut", "pirate", "crystal", "alien", "storm") var accessory: String = "none"
+## Mulkosilmät (pois, jos asuste peittää silmät, esim. aurinkolasit).
+@export var googly_eyes: bool = true
+## Vihaiset kulmakarvat.
+@export var angry: bool = false
 
 enum Pose { IDLE, CROUCH, AIR }
 
@@ -41,11 +49,14 @@ var _leg_rest: Array[Vector3] = []
 var _tail: Node3D = null
 var _tail_rest: Vector3 = Vector3.ZERO
 var _last_global: Vector3 = Vector3.ZERO
+var _flames: Array[MeshInstance3D] = []
 
 
 func _ready() -> void:
 	_phase = randf() * TAU
+	_apply_tint()
 	_build_face()
+	_build_accessory()
 	_find_limbs()
 	_last_global = global_position
 	set_process(not Engine.is_editor_hint())
@@ -99,7 +110,7 @@ func _build_face() -> void:
 
 	# Eri kokoiset silmät näyttävät hullummilta.
 	var sizes := [eye_size * 1.15, eye_size * 0.85]
-	for i in 2:
+	for i in (2 if googly_eyes else 0):
 		var side := -1.0 if i == 0 else 1.0
 		var r: float = sizes[i] * s
 		var eye := MeshInstance3D.new()
@@ -164,6 +175,266 @@ func _build_face() -> void:
 	tongue_mesh.scale = Vector3(1.0, 1.0, 0.45)
 	tongue_mesh.position = Vector3(0, -0.2 * s, 0.03 * s)
 	_tongue.add_child(tongue_mesh)
+
+
+## Värjää apinamallin (tekstuuri x fur_tint).
+func _apply_tint() -> void:
+	if fur_tint == Color.WHITE:
+		return
+	var model := get_node_or_null("Monkey")
+	if model == null:
+		return
+	# Mallin tekstuurin turkin väri on b06041; kerroin tuo turkin kohti haluttua väriä.
+	# Kerroin lasketaan hieman vaaleammasta arvosta, jottei kasvojen vaalea alue pala puhki.
+	var base := Color("c98245")
+	var mult := Color(minf(fur_tint.r / base.r, 2.4), minf(fur_tint.g / base.g, 2.4), minf(fur_tint.b / base.b, 2.4))
+	var peak := maxf(mult.r, maxf(mult.g, mult.b))
+	if peak > 1.6:
+		mult = Color(mult.r * 1.6 / peak, mult.g * 1.6 / peak, mult.b * 1.6 / peak) * 1.0
+	for node in model.find_children("*", "MeshInstance3D", true, false):
+		var mi := node as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		for i in mi.mesh.get_surface_count():
+			var src := mi.get_active_material(i) as BaseMaterial3D
+			if src == null:
+				continue
+			var m := src.duplicate() as BaseMaterial3D
+			m.albedo_color = Color(mult.r, mult.g, mult.b)
+			mi.set_surface_override_material(i, m)
+
+
+## Pomon tunnusasuste (verkkosivun pomokuvien mukaan).
+func _build_accessory() -> void:
+	var s := model_scale
+	var top := 1.45 * s
+	var ink := StandardMaterial3D.new()
+	ink.albedo_color = Color("452516")
+	if angry and googly_eyes:
+		for side in [-1.0, 1.0]:
+			var brow := _box(Vector3(0.36, 0.07, 0.08) * s, ink)
+			brow.position = Vector3(side * 0.33 * s, 1.36 * s, 0.66 * s)
+			brow.rotation.z = side * -0.35
+	match accessory:
+		"moss":
+			var moss := _mat(Color("70d52f"))
+			var moss2 := _mat(Color("4a9e18"))
+			for side in [-1.0, 1.0]:
+				for j in 3:
+					var b := _sphere(0.22 * s * (1.0 - j * 0.2), moss if j % 2 == 0 else moss2)
+					b.position = Vector3(side * (0.75 - j * 0.12) * s, (1.05 + j * 0.12) * s, (0.1 - j * 0.15) * s)
+					b.scale.y = 0.55
+			var flower := _sphere(0.12 * s, _mat(Color("ffd64a"), 0.4))
+			flower.position = Vector3(0.35 * s, top + 0.05 * s, 0.1 * s)
+		"ice":
+			var ice := _mat(Color(0.8, 0.95, 1.0), 0.6)
+			for j in 5:
+				var spike := MeshInstance3D.new()
+				var cone := CylinderMesh.new()
+				cone.top_radius = 0.0
+				cone.bottom_radius = 0.12 * s
+				cone.height = (0.45 + 0.15 * float(j % 2)) * s
+				cone.radial_segments = 5
+				spike.mesh = cone
+				spike.material_override = ice
+				spike.position = Vector3((-0.5 + 0.25 * j) * s, top + 0.12 * s, -0.05 * s)
+				spike.rotation.z = (-0.5 + 0.25 * j) * -0.6
+				spike.name = "Silly_IceSpike%d" % j
+				add_child(spike)
+		"glasses":
+			var dark := _mat(Color("1a1410"), 0.2)
+			var gold := _mat(Color("ffd64a"), 0.5)
+			for side in [-1.0, 1.0]:
+				var lens := _box(Vector3(0.42, 0.26, 0.08) * s, dark)
+				lens.position = Vector3(side * 0.3 * s, 1.08 * s, 0.68 * s)
+			var bridge := _box(Vector3(0.2, 0.06, 0.06) * s, gold)
+			bridge.position = Vector3(0.0, 1.12 * s, 0.7 * s)
+			# Kultaketju.
+			for j in 7:
+				var link := _sphere(0.07 * s, gold)
+				var a := -1.2 + float(j) * 0.4
+				link.position = Vector3(sin(a) * 0.5 * s, (0.72 - cos(a) * 0.08) * s, 0.62 * s)
+		"candy":
+			var colors := [Color("ffd64a"), Color("9be9ff"), Color("70d52f"), Color("fff0d2"), Color("ff5aa8")]
+			for j in 12:
+				var dot := _sphere(0.06 * s, _mat(colors[j % colors.size()], 0.3))
+				var a := float(j) * 2.4
+				dot.position = Vector3(cos(a) * 0.65 * s, (0.4 + fmod(float(j) * 0.37, 1.0) * 0.9) * s, (0.35 + sin(a) * 0.2) * s)
+			var stick := MeshInstance3D.new()
+			var cyl := CylinderMesh.new()
+			cyl.top_radius = 0.03 * s
+			cyl.bottom_radius = 0.03 * s
+			cyl.height = 0.5 * s
+			stick.mesh = cyl
+			stick.material_override = _mat(Color.WHITE)
+			stick.position = Vector3(0.3 * s, top + 0.25 * s, 0.0)
+			stick.name = "Silly_Stick"
+			add_child(stick)
+			var pop := _sphere(0.2 * s, _mat(Color("ef62d2"), 0.5))
+			pop.position = Vector3(0.3 * s, top + 0.55 * s, 0.0)
+			pop.scale.z = 0.4
+		"flame":
+			var outer := _mat(Color("ff6a1a"), 2.4)
+			var inner := _mat(Color("ffd64a"), 3.0)
+			for j in 3:
+				var f := MeshInstance3D.new()
+				var cone := CylinderMesh.new()
+				cone.top_radius = 0.0
+				cone.bottom_radius = (0.32 - j * 0.06) * s
+				cone.height = (0.8 - j * 0.15) * s
+				cone.radial_segments = 8
+				f.mesh = cone
+				f.material_override = outer if j < 2 else inner
+				f.position = Vector3((-0.15 + j * 0.15) * s, top + 0.3 * s, (0.05 * j) * s)
+				f.name = "Silly_Flame%d" % j
+				add_child(f)
+				_flames.append(f)
+		"king":
+			var gold := _mat(Color("ffd64a"), 0.5)
+			var band := MeshInstance3D.new()
+			var cyl := CylinderMesh.new()
+			cyl.top_radius = 0.6 * s
+			cyl.bottom_radius = 0.56 * s
+			cyl.height = 0.16 * s
+			cyl.radial_segments = 16
+			band.mesh = cyl
+			band.material_override = gold
+			band.position = Vector3(0.0, top + 0.02 * s, 0.0)
+			band.name = "Silly_Crown"
+			add_child(band)
+			for j in 5:
+				var spike := MeshInstance3D.new()
+				var cone := CylinderMesh.new()
+				cone.top_radius = 0.0
+				cone.bottom_radius = 0.1 * s
+				cone.height = 0.28 * s
+				cone.radial_segments = 6
+				spike.mesh = cone
+				spike.material_override = gold
+				var a := -0.9 + 0.45 * j
+				spike.position = Vector3(sin(a) * 0.55 * s, top + 0.22 * s, cos(a) * 0.3 * s)
+				spike.name = "Silly_CrownSpike%d" % j
+				add_child(spike)
+			var gem := _sphere(0.08 * s, _mat(Color("ef62d2"), 1.0))
+			gem.position = Vector3(0.0, top + 0.03 * s, 0.6 * s)
+			# Viitta.
+			var cape := _box(Vector3(1.7, 1.1, 0.06) * s, _mat(Color("7b3fb5")))
+			cape.position = Vector3(0.0, 0.75 * s, -0.66 * s)
+		"astronaut":
+			# Lasikupu ja antennit.
+			var glass := StandardMaterial3D.new()
+			glass.albedo_color = Color(0.6, 0.9, 1.0, 0.2)
+			glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			glass.roughness = 0.05
+			glass.rim_enabled = true
+			glass.rim = 0.7
+			var dome := _sphere(1.2 * s, glass)
+			dome.position = Vector3(0.0, 0.85 * s, 0.05 * s)
+			var metal := _mat(Color("8a5ac0"))
+			var glow := _mat(Color("6aff8a"), 2.0)
+			for side in [-1.0, 1.0]:
+				var ant := _box(Vector3(0.05, 0.55, 0.05) * s, metal)
+				ant.position = Vector3(side * 0.4 * s, top + 0.45 * s, 0.0)
+				ant.rotation.z = side * -0.3
+				var tip := _sphere(0.1 * s, glow)
+				tip.position = Vector3(side * 0.5 * s, top + 0.75 * s, 0.0)
+		"pirate":
+			var black := _mat(Color("1a1410"))
+			var hat := _box(Vector3(1.5, 0.35, 0.9) * s, black)
+			hat.position = Vector3(0.0, top + 0.12 * s, 0.0)
+			var crown := _box(Vector3(0.9, 0.35, 0.7) * s, black)
+			crown.position = Vector3(0.0, top + 0.38 * s, 0.0)
+			var skull := _sphere(0.1 * s, _mat(Color.WHITE))
+			skull.position = Vector3(0.0, top + 0.2 * s, 0.46 * s)
+			var patch := _box(Vector3(0.34, 0.3, 0.06) * s, black)
+			patch.position = Vector3(0.36 * s, 1.07 * s, 0.84 * s)
+			var strap := _box(Vector3(1.3, 0.05, 0.04) * s, black)
+			strap.position = Vector3(0.0, 1.2 * s, 0.7 * s)
+			strap.rotation.z = -0.25
+		"crystal":
+			var violet := _mat(Color(0.78, 0.5, 1.0), 1.4)
+			var cyan := _mat(Color(0.45, 0.9, 1.0), 1.4)
+			for j in 7:
+				var c := MeshInstance3D.new()
+				var cone := CylinderMesh.new()
+				cone.top_radius = 0.0
+				cone.bottom_radius = 0.14 * s
+				cone.height = (0.5 + 0.2 * float(j % 3)) * s
+				cone.radial_segments = 6
+				c.mesh = cone
+				c.material_override = violet if j % 2 == 0 else cyan
+				var a := -1.4 + float(j) * 0.47
+				c.position = Vector3(sin(a) * 0.65 * s, top + (0.1 + cos(a) * 0.1) * s, -0.15 * s)
+				c.rotation.z = -a * 0.55
+				c.name = "Silly_Crystal%d" % j
+				add_child(c)
+		"alien":
+			var green := _mat(Color("6aff8a"), 0.8)
+			for side in [-1.0, 1.0]:
+				var stalk := _box(Vector3(0.06, 0.6, 0.06) * s, _mat(Color("3a9a4a")))
+				stalk.position = Vector3(side * 0.3 * s, top + 0.3 * s, 0.1 * s)
+				stalk.rotation.z = side * -0.25
+				var bulb := _sphere(0.14 * s, green)
+				bulb.position = Vector3(side * 0.38 * s, top + 0.62 * s, 0.1 * s)
+			# Kolmas silmä otsassa.
+			var eye := _sphere(0.16 * s, _mat(Color.WHITE))
+			eye.position = Vector3(0.0, 1.38 * s, 0.62 * s)
+			var pupil := _sphere(0.08 * s, _mat(Color("101010")))
+			pupil.position = Vector3(0.0, 1.38 * s, 0.76 * s)
+		"storm":
+			# Ukkospilvi päälaella ja salamat.
+			var cloud := _mat(Color("8a90a8"))
+			for j in 5:
+				var puff := _sphere((0.3 + 0.08 * float(j % 2)) * s, cloud)
+				puff.position = Vector3((-0.5 + 0.25 * j) * s, top + (0.25 + 0.08 * float(j % 2)) * s, 0.0)
+			var bolt_mat := _mat(Color("ffe94a"), 2.5)
+			for side in [-1.0, 1.0]:
+				var bolt := _box(Vector3(0.08, 0.45, 0.05) * s, bolt_mat)
+				bolt.position = Vector3(side * 0.55 * s, top - 0.05 * s, 0.25 * s)
+				bolt.rotation.z = side * 0.5
+				_flames.append(bolt)
+			var goggles := _mat(Color("ffd64a"), 0.3)
+			var strap := _box(Vector3(1.5, 0.08, 0.06) * s, _mat(Color("5a3a20")))
+			strap.position = Vector3(0.0, 1.3 * s, 0.62 * s)
+			for side in [-1.0, 1.0]:
+				var g := _box(Vector3(0.3, 0.12, 0.06) * s, goggles)
+				g.position = Vector3(side * 0.3 * s, 1.32 * s, 0.66 * s)
+
+
+func _mat(c: Color, emission: float = 0.0) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = c
+	m.roughness = 0.5
+	if emission > 0.0:
+		m.emission_enabled = true
+		m.emission = c
+		m.emission_energy_multiplier = emission
+	return m
+
+
+func _sphere(r: float, m: Material) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = r
+	sm.height = r * 2.0
+	sm.radial_segments = 12
+	sm.rings = 6
+	mi.mesh = sm
+	mi.material_override = m
+	mi.name = "Silly_Acc%d" % get_child_count()
+	add_child(mi)
+	return mi
+
+
+func _box(size: Vector3, m: Material) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var bm := BoxMesh.new()
+	bm.size = size
+	mi.mesh = bm
+	mi.material_override = m
+	mi.name = "Silly_Acc%d" % get_child_count()
+	add_child(mi)
+	return mi
 
 
 ## Apinamallin jalat ja häntä ovat omia solmujaan, joten niitä voi heiluttaa.
@@ -237,6 +508,9 @@ func _process(delta: float) -> void:
 		_tongue.rotation = Vector3(0.25 + sin(t * 9.0) * flap * c, 0.0, sin(t * 5.3) * 0.5 * c)
 
 	_update_pupils(delta, t, c)
+	# Liekit lepattavat.
+	for i in _flames.size():
+		_flames[i].scale = Vector3(1.0, 1.0 + sin(t * 14.0 + i * 2.0) * 0.18, 1.0)
 
 
 func _kick_pupils(kick: Vector2) -> void:

@@ -14,16 +14,18 @@ const KIND_COLORS := {
 	"splitter": Color("ffd23f"),
 	"heavy": Color("e0a526"),
 	"bomber": Color("ffd23f"),
+	"bouncy": Color("b06cff"),
 }
 
 ## Hahmon nimi ja kyky (työkaluvihje ja HUD-kehote).
 const KIND_INFO := {
 	"normal": ["Perus", ""],
-	"exploding": ["Räjähtävä", "Napauta: räjähdä"],
+	"exploding": ["Pommibanaani", "Napauta: räjähdä"],
 	"speedy": ["Nopea", "Napauta: syöksy"],
 	"splitter": ["Jakautuva", "Napauta: jakaudu kolmeksi"],
 	"heavy": ["Painava", "Napauta: iskeydy alas"],
 	"bomber": ["Pommittaja", "Napauta: pudota banaanipommi"],
+	"bouncy": ["Kimpoava", "Napauta: superpomppu"],
 }
 
 const EDGE := Color(0.18, 0.08, 0.02)
@@ -75,6 +77,11 @@ func _draw() -> void:
 		"splitter":
 			for side in [-1.0, 1.0]:
 				_draw_banana(center + Vector2(-2.0, side * radius * 0.42), length * 0.85, thick * 0.85, side * 0.35, base, alpha * 0.55, false)
+		"bouncy":
+			# Pomppukaaret alla.
+			for i in 2:
+				var c := center + Vector2(-radius * 0.9 + float(i) * radius * 0.9, radius * 0.95)
+				draw_arc(c, radius * 0.45, PI, TAU, 10, Color(1, 1, 1, 0.75 * alpha), 2.5, true)
 		"bomber":
 			var bomb := center + Vector2(radius * 0.5, radius * 0.95)
 			draw_circle(bomb, radius * 0.3 + 2.0, Color(EDGE, alpha))

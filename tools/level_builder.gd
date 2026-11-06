@@ -10,7 +10,7 @@ extends Node
 ## Levels 1-5 plains (tutorial), 6-10 snow, 11-20 space. Bosses on 10, 15 and 20.
 
 const LEVEL_PATH := "res://scenes/levels/level%d.tscn"
-const LEVEL_COUNT := 60
+const LEVEL_COUNT := 110
 const ENEMY_SCENE := "res://scenes/includes/characters/enemy_plain.tscn"
 const BLOCK_SCENE := "res://scenes/includes/blocks/block.tscn"
 const DYNAMITE_SCENE := "res://scenes/includes/blocks/dynamite.tscn"
@@ -20,6 +20,36 @@ const WELL_SCENE := "res://scenes/includes/gravity_well.tscn"
 const BOSS_SNOW_SCENE := "res://scenes/includes/characters/boss_snow.tscn"
 const BOSS_SPACE_SCENE := "res://scenes/includes/characters/boss_space.tscn"
 const BOSS_FINAL_SCENE := "res://scenes/includes/characters/boss_final.tscn"
+## Kuusi maailmaa x 10 tasoa (kuten pelin verkkosivulla). Pomo joka 10. tasolla.
+const WORLD_IDS := ["meadow", "ice", "desert", "candy", "volcano", "apocalypse",
+	# Lisämaailmat 61-110 (pelin alkuperäiset maailmat, joille sivulla ei ole vastinetta).
+	"space", "beach", "cave", "exo", "sky"]
+const BOSS_SCENES := [
+	"res://scenes/includes/characters/boss_niittyjatti.tscn",
+	"res://scenes/includes/characters/boss_jaaapina.tscn",
+	"res://scenes/includes/characters/boss_aavikonkuningas.tscn",
+	"res://scenes/includes/characters/boss_karkkihirvio.tscn",
+	"res://scenes/includes/characters/boss_tulivuorenherra.tscn",
+	"res://scenes/includes/characters/boss_apinakuningas.tscn",
+	"res://scenes/includes/characters/boss_avaruusapina.tscn",
+	"res://scenes/includes/characters/boss_merirosvoapina.tscn",
+	"res://scenes/includes/characters/boss_kristalliapina.tscn",
+	"res://scenes/includes/characters/boss_muukalaisapina.tscn",
+	"res://scenes/includes/characters/boss_myrskyapina.tscn",
+]
+const BOSS_HINTS := [
+	["PÄÄPOMO: NIITTYJÄTTI! Se heittelee kiviä lentoradallesi.", "Kaada kivinen kukkula jättiläisen niskaan."],
+	["PÄÄPOMO: JÄÄAPINA! Sen jääpuhuri hidastaa banaaneja lennossa.", "Särje kaksinkertainen jäämuuri pala palalta."],
+	["PÄÄPOMO: AAVIKON KUNINGAS! Hiekkamyrsky kääntää lentorataa.", "Kuningas kaivautuu hiekkaan ja nousee toisaalla. Ole nopea!"],
+	["PÄÄPOMO: KARKKIHIRVIÖ! Se liimaa rikotut palikat takaisin.", "Vain kova ja tarkka osuma hajottaa sokerilinnakkeen lopullisesti."],
+	["PÄÄPOMO: TULIVUOREN HERRA! Se heittää laavapommeja.", "Obsidiaanitorni kestää paljon. Käytä pommibanaaneja."],
+	["LOPPUTAISTELU: APINAKUNINGAS! Painovoimamyrsky sekoittaa laukaukset.", "Kruunu on raskas ja valtaistuin hutera. Viimeinen taistelu!"],
+	["PÄÄPOMO: AVARUUSAPINA! Sen ympärillä kiertää kuu, joka torjuu banaaneja.", "Ajoita laukaus, kun kuu on toisella puolella."],
+	["PÄÄPOMO: MERIROSVOAPINA! Hyökyaalto pyyhkii maassa makaavat banaanit pois.", "Osu suoraan – toista tilaisuutta ei tule."],
+	["PÄÄPOMO: KRISTALLIAPINA! Kristallikilpi suojaa sitä välillä.", "Ammu, kun kilpi ei hehku."],
+	["PÄÄPOMO: MUUKALAISAPINA! Hologrammit ottavat osumat vastaan.", "Vain oikea apina kaatuu – hologrammit puhkeavat."],
+	["PÄÄPOMO: MYRSKYAPINA! Pyörremyrsky nostaa banaanit ilmaan.", "Pyörre liikkuu – tähtää sen ohi."],
+]
 const LEVEL_SCRIPT := "res://scenes/game/level.gd"
 const KILLZONE_SCRIPT := "res://scenes/includes/killzone.gd"
 const HINT_SCRIPT := "res://scenes/includes/tutorial_hint.gd"
@@ -78,14 +108,12 @@ func _build_level(n: int) -> int:
 	var root := packed.instantiate()
 	# 1-5 plains, 6-10 snow, 11-20 space, 21-52 ground worlds (beach, cave, volcano,
 	# exoplanet: the look comes from the visual theme), 53-60 floating sky islands.
+	# 1-10 niityt, 11-20 jäävuoret (luminen maa), 21-50 maa, 51-60 apokalypsin
+	# leijuvat saaret (ei maata).
 	var kind := "plains"
-	if n > 52:
+	if n > 100 or (n > 50 and n <= 70):
 		kind = "space"
-	elif n > 20:
-		kind = "plains"
-	elif n > 10:
-		kind = "space"
-	elif n > 5:
+	elif n > 10 and n <= 20:
 		kind = "snow"
 
 	_reset(root, kind)
@@ -109,14 +137,15 @@ func _build_level(n: int) -> int:
 
 ## Ammusjonon kirjaimet -> hahmo-scenet (scenes/includes/characters/<nimi>.tscn).
 const AMMO_LETTERS := {
-	"n": "normal", "e": "exploding", "s": "speedy", "p": "splitter", "h": "heavy", "b": "bomber",
+	"n": "normal", "e": "exploding", "s": "speedy", "p": "splitter", "h": "heavy", "b": "bomber", "k": "bouncy",
 }
 ## Erikoishahmot: [kirjain, esittelykenttä, esittelyvihje].
 const SPECIAL_CHARACTERS := [
-	["s", 4, "UUSI HAHMO: Nopea! Napauta ruutua lennon aikana, niin se syöksyy suoraan eteenpäin."],
-	["p", 8, "UUSI HAHMO: Jakautuva! Napauta lennon aikana, niin se jakautuu kolmeksi."],
-	["h", 12, "UUSI HAHMO: Painava! Napauta, niin se iskeytyy suoraan alas ja lähettää iskuaallon."],
-	["b", 16, "UUSI HAHMO: Pommittaja! Napauta, niin se pudottaa räjähtävän munan ja pomppaa ylös."],
+	["s", 4, "UUSI BANAANI: Nopea! Napauta ruutua lennon aikana, niin se syöksyy suoraan eteenpäin."],
+	["p", 8, "UUSI BANAANI: Jakautuva! Napauta lennon aikana, niin se jakautuu kolmeksi."],
+	["h", 12, "UUSI BANAANI: Painava! Napauta, niin se iskeytyy suoraan alas ja lähettää iskuaallon."],
+	["b", 16, "UUSI BANAANI: Pommittaja! Napauta, niin se pudottaa banaanipommin ja pomppaa ylös."],
+	["k", 23, "UUSI BANAANI: Kimpoava! Se pomppii kuin kumipallo. Napauta, niin se tekee superpompun."],
 ]
 
 
@@ -125,7 +154,7 @@ const SPECIAL_CHARACTERS := [
 ## kentän alkuun tulee vihje.
 func _mix_characters(root: Node, ammo: String, n: int) -> String:
 	if n == 2:
-		_intro_hint(root, "Vinkki: napauta räjähtävää ammusta lennon aikana, niin se räjähtää heti.", false)
+		_intro_hint(root, "Vinkki: napauta pommibanaania lennon aikana, niin se räjähtää heti.", false)
 	var unlocked: Array = []
 	var intro := ""
 	for spec in SPECIAL_CHARACTERS:
@@ -410,7 +439,8 @@ func _hint(root: Node, steps: Array) -> void:
 
 ## Fills the level and returns the ammo queue: "n" = normal, "e" = exploding.
 func _fill_level(root: Node, n: int) -> String:
-	if n > 20:
+	# Opetuskentät 1-5 ovat käsin tehtyjä, kaikki muut kootaan maailman mukaan.
+	if n > 5:
 		return _compose(root, n)
 	var g := GY
 	var armored := {"min_hit_strength": 9.0, "death_velocity_change": 6.0, "points": 800}
@@ -703,6 +733,12 @@ const SLINGSHOT_SCENE := "res://scenes/includes/slingshot.tscn"
 
 ## Rakennusmateriaalit maailmoittain (painotettu arvonta).
 const WORLD_MATERIALS := {
+	"meadow": ["wood", "wood", "wood", "stone", "ice"],
+	"ice": ["ice", "ice", "ice", "stone", "wood"],
+	"desert": ["stone", "stone", "wood", "wood"],
+	"candy": ["ice", "wood", "ice", "stone"],
+	"apocalypse": ["stone", "stone", "wood", "ice"],
+	"space": ["ice", "stone", "wood", "ice"],
 	"beach": ["wood", "wood", "wood", "stone", "ice"],
 	"cave": ["stone", "stone", "wood", "ice", "ice"],
 	"volcano": ["stone", "stone", "stone", "wood"],
@@ -722,6 +758,11 @@ const LAYOUTS := [
 ]
 const WIDTHS := {"hut": 2.9, "dynhouse": 2.9, "tower": 3.1, "tower3": 3.1, "fort": 6.1, "pyramid": 3.0, "keep": 3.3, "wall": 2.6, "bridge": 4.6}
 const WORLD_HINTS := {
+	"ice": ["JÄÄVUORET! Jää on liukasta ja särkyy helposti.", "Jäiset rakennelmat sortuvat yhdestä hyvästä osumasta."],
+	"desert": ["AAVIKKOMAA! Apinat rakentavat kivisiä linnoja.", "Etsi linnan heikko kohta ja kaada se."],
+	"candy": ["KARKKIMAA! Sokerirakennelmat näyttävät pehmeiltä – mutta eivät ole.", "Kova osuma hajottaa karkkilinnan."],
+	"space": ["AVARUUS! Ei maata – vain asteroideja ja planeettoja.", "Sininen planeetta vetää ammusta puoleensa, punainen työntää."],
+	"apocalypse": ["APOKALYPSI! Saaret leijuvat tyhjyyden yllä.", "Kaada apinat saaren reunan yli – ne putoavat syvyyteen."],
 	"beach": ["RANTA! Puiset rantamajat hajoavat helposti.", "Etsi rakennelman heikko kohta ja kaada se apinoiden päälle."],
 	"cave": ["LUOLA! Kivirakenteet ovat kestäviä.", "Ammu tukipilareita, niin koko rakennelma sortuu."],
 	"volcano": ["TULIVUORI! Kivilinnoja ja dynamiittia joka puolella.", "Yksi osuma dynamiittiin voi laukaista ketjureaktion."],
@@ -768,10 +809,10 @@ func _compose(root: Node, n: int) -> String:
 	if _rng == null:
 		_rng = RandomNumberGenerator.new()
 	_rng.seed = n * 7919 + 17
-	var world_i := (n - 21) / 8
-	var k := (n - 21) % 8
-	var world: String = ["beach", "cave", "volcano", "exo", "sky"][world_i]
-	_difficulty = float(n - 21) / 39.0
+	var world_i := (n - 1) / 10
+	var k := (n - 1) % 10
+	var world: String = WORLD_IDS[world_i]
+	_difficulty = clampf(float(n - 6) / 53.0, 0.0, 1.0)
 	_mats = WORLD_MATERIALS[world]
 
 	var layout: Array = (LAYOUTS[(k + world_i * 3) % LAYOUTS.size()] as Array).duplicate()
@@ -779,48 +820,120 @@ func _compose(root: Node, n: int) -> String:
 		for i in layout.size():
 			if layout[i] == "hut":
 				layout[i] = "dynhouse"
-	var boss_scene := ""
-	if n == 44 or n == 60:
-		boss_scene = BOSS_FINAL_SCENE
-	elif n == 52:
-		boss_scene = BOSS_SPACE_SCENE
-	if boss_scene != "":
-		layout = ["keep"]
+	var is_boss := k == 9
+	var boss_scene: String = BOSS_SCENES[world_i] if is_boss else ""
 
-	if k == 0:
-		_hint(root, WORLD_HINTS[world])
-	elif n == 44:
-		_hint(root, ["PÄÄPOMO: Apinakuningas on palannut tulivuoreen!", "Käytä dynamiittia ja räjähtäviä ammuksia."])
-	elif n == 52:
-		_hint(root, ["PÄÄPOMO: Avaruusapina laskeutui eksoplaneetalle!", "Painovoimakentät auttavat osumaan."])
-	elif n == 60:
-		_hint(root, ["LOPPUTAISTELU: Tulipomo taivaansaarilla!", "Viimeinen kenttä – näytä mihin pystyt!"])
+	if is_boss:
+		_hint(root, BOSS_HINTS[world_i])
+	elif k == 0:
+		_hint(root, WORLD_HINTS.get(world, []))
 
-	if world == "sky":
-		_compose_sky(root, layout, boss_scene)
+	if is_boss:
+		_compose_boss(root, world_i, boss_scene)
+	elif world in ["apocalypse", "space", "sky"]:
+		_compose_sky(root, layout, "")
 	else:
 		var gap := 0.7
 		var total := 0.0
 		for arch in layout:
 			total += float(WIDTHS[arch])
 		total += gap * float(layout.size() - 1)
-		var right := 9.2 if boss_scene != "" else 14.3
-		var x := 2.3 + maxf(right - 2.3 - total, 0.0) * _rng.randf()
+		var x := 2.3 + maxf(14.3 - 2.3 - total, 0.0) * _rng.randf()
 		for arch in layout:
 			_arch(root, arch, x, g)
 			x += float(WIDTHS[arch]) + gap
-		if boss_scene != "":
-			_boss(root, boss_scene, 11.8, g)
-			_dyn(root, 14.0, g)
 
-	if world == "exo":
+	# Apokalypsin "Särkynyt kuu" (taso 56): painovoimakentät.
+	if world in ["space", "exo"] and not is_boss:
 		var blue := Color(0.35, 0.6, 1.0)
 		var red := Color(1.0, 0.35, 0.3)
 		_well(root, _rng.randf_range(-1.0, 2.0), _rng.randf_range(5.0, 6.5), 9.0, 6.5, 1.3, blue)
-		if _difficulty > 0.6 or boss_scene != "":
+		if _difficulty > 0.6 or world == "space":
 			_well(root, _rng.randf_range(5.5, 8.0), _rng.randf_range(7.5, 8.5), -8.0, 4.5, 1.0, red)
+	if n == 56:
+		_well(root, _rng.randf_range(-1.0, 2.0), _rng.randf_range(5.0, 6.5), 9.0, 6.5, 1.3, Color(0.35, 0.6, 1.0))
+		_well(root, _rng.randf_range(5.5, 8.0), _rng.randf_range(7.5, 8.5), -8.0, 4.5, 1.0, Color(1.0, 0.35, 0.3))
 
-	return _ammo_for(boss_scene != "")
+	return _ammo_for(is_boss)
+
+
+## Pomokentät: jokaisella pomolla oma puolustusrakennelma (verkkosivun mukaan).
+func _compose_boss(root: Node, world_i: int, boss_scene: String) -> void:
+	var g := GY
+	match world_i:
+		0:
+			# Niittyjätti: kivinen kukkula.
+			_arch(root, "pyramid", 3.0, g)
+			_arch(root, "keep", 6.6, g)
+			_boss(root, boss_scene, 11.8, g)
+		1:
+			# Jääapina: kaksinkertainen jäämuuri.
+			for wx in [7.4, 9.0]:
+				for i in 3:
+					_b(root, "ice", wx, g + 0.5 + float(i), 1.0, 1.0)
+			_arch(root, "hut", 2.6, g)
+			_boss(root, boss_scene, 11.8, g)
+		2:
+			# Aavikon kuningas: hiekkalinna (kivi) ja kaivautumispaikat.
+			_arch(root, "pyramid", 2.0, g)
+			_arch(root, "wall", 5.5, g)
+			_boss(root, boss_scene, 11.6, g)
+			_dyn(root, 14.2, g)
+		3:
+			# Karkkihirviö: sokerilinnake.
+			_arch(root, "fort", 1.8, g)
+			_boss(root, boss_scene, 11.2, g)
+		4:
+			# Tulivuoren herra: obsidiaanitorni.
+			_mats = ["stone"]
+			_arch(root, "tower3", 5.2, g)
+			_mats = WORLD_MATERIALS["volcano"]
+			_dyn(root, 9.0, g)
+			_boss(root, boss_scene, 11.8, g)
+		6:
+			# Avaruusapina: asteroidilinnake, kuu kiertää pomoa.
+			_pf(root, 4.0, 2.2, 4.4)
+			_arch(root, "tower", 4.0 - 1.55, 2.2)
+			_pf(root, 11.6, GY, 6.4)
+			_boss(root, boss_scene, 11.8, GY)
+			_well(root, 1.0, 6.0, 9.0, 6.5, 1.3, Color(0.35, 0.6, 1.0))
+		7:
+			# Merirosvoapina: rantalaivan tapainen linnake.
+			_arch(root, "bridge", 2.4, g)
+			_arch(root, "hut", 7.4, g)
+			_boss(root, boss_scene, 11.8, g)
+			_dyn(root, 14.2, g)
+		8:
+			# Kristalliapina: kristallilinna (jää + kivi).
+			_mats = ["ice", "stone"]
+			_arch(root, "keep", 3.0, g)
+			_arch(root, "tower", 6.8, g)
+			_mats = WORLD_MATERIALS["cave"]
+			_boss(root, boss_scene, 11.8, g)
+		9:
+			# Muukalaisapina: painovoimakentät ja leijuva torni.
+			_arch(root, "tower3", 3.0, g)
+			_arch(root, "wall", 7.0, g)
+			_boss(root, boss_scene, 11.8, g)
+			_well(root, 0.5, 6.0, 9.0, 6.5, 1.3, Color(0.35, 0.6, 1.0))
+		10:
+			# Myrskyapina: pilvisaaret.
+			_pf(root, 3.6, 1.6, 4.0)
+			_arch(root, "hut", 3.6 - 1.45, 1.6)
+			_pf(root, 7.4, 3.2, 2.6)
+			_e(root, 7.4, 3.2)
+			_pf(root, 11.6, GY, 6.4)
+			_boss(root, boss_scene, 11.8, GY)
+			_dyn(root, 14.0, GY)
+		5:
+			# Apinakuningas: kelluvat kuninkaalliset saaret + painovoimamyrsky.
+			_pf(root, 4.0, 2.6, 4.2)
+			_arch(root, "keep", 4.0 - 1.65, 2.6)
+			_pf(root, 11.6, GY, 6.4)
+			_boss(root, boss_scene, 11.9, GY)
+			_dyn(root, 14.0, GY)
+			_well(root, 1.5, 6.0, 9.0, 6.5, 1.3, Color(0.35, 0.6, 1.0))
+			_well(root, 7.5, 8.0, -8.0, 4.5, 1.0, Color(1.0, 0.35, 0.3))
 
 
 func _ammo_for(boss: bool) -> String:

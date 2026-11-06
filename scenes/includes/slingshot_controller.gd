@@ -408,6 +408,11 @@ func _make_projectile(character: Node3D) -> RigidBody3D:
 		var material := PhysicsMaterial.new()
 		material.bounce = projectile_bounce
 		material.friction = projectile_friction
+		# Hahmo voi määrätä oman pomppuisuutensa (kimpoava banaani).
+		if "bounce" in character:
+			material.bounce = float(character.get("bounce"))
+			material.friction = float(character.get("friction"))
+			material.absorbent = false
 		body.physics_material_override = material
 
 	body.continuous_cd = true
