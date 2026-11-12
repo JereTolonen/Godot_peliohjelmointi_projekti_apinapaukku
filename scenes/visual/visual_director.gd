@@ -934,6 +934,12 @@ func _scatter_theme_props(parent: Node3D, theme: String, rng: RandomNumberGenera
 			_scatter_candy(parent, rng)
 		"apocalypse":
 			_scatter_apocalypse(parent, rng)
+		"city":
+			_scatter_city(parent, rng)
+		"castle":
+			_scatter_castle(parent, rng)
+		"paris":
+			_scatter_paris(parent, rng)
 		"glacier":
 			_scatter_kit(parent, "tree-pine-snow", 9, Vector2(4.0, 5.5), rng, true)
 			_scatter_kit(parent, "rocks", 10, Vector2(0.5, 0.9), rng)
@@ -1116,6 +1122,168 @@ func _scatter_apocalypse(parent: Node3D, rng: RandomNumberGenerator) -> void:
 			c.position = Vector3(0.0, 0.6, 0.0)
 			c.scale = Vector3.ONE * 0.5
 			rock.add_child(c)
+
+
+func _box_mesh(size: Vector3) -> BoxMesh:
+	var b := BoxMesh.new()
+	b.size = size
+	return b
+
+
+func _cone_mesh(radius: float, height: float, sides: int = 8) -> CylinderMesh:
+	var c := CylinderMesh.new()
+	c.top_radius = 0.0
+	c.bottom_radius = radius
+	c.height = height
+	c.radial_segments = sides
+	c.rings = 1
+	return c
+
+
+func _put(parent: Node3D, mesh: Mesh, mat: Material, pos: Vector3, shadow: bool = false) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	mi.mesh = mesh
+	mi.material_override = mat
+	mi.position = pos
+	if not shadow:
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mi)
+	return mi
+
+
+## Kaupunki: pilvenpiirtäjät ikkunavaloineen, katulamput, liikennekartiot ja puut.
+func _scatter_city(parent: Node3D, rng: RandomNumberGenerator) -> void:
+	var walls := [Color("5a6888"), Color("6a7898"), Color("8a7a90"), Color("4a5870"), Color("9a8878")]
+	var lit := ArtStyle.flat_material(Color("ffd890"), 0.4, 1.6)
+	var dark_win := ArtStyle.flat_material(Color("2a3450"), 0.3)
+	for i in 26:
+		var w := rng.randf_range(5.0, 10.0)
+		var h := rng.randf_range(14.0, 46.0)
+		var z := rng.randf_range(-32.0, -70.0)
+		var x := rng.randf_range(-100.0, 110.0)
+		var b := _put(parent, _box_mesh(Vector3(w, h, w)), ArtStyle.soft_material(walls[i % walls.size()], Color(1.1, 1.05, 1.0), false, 40.0, -2.6), Vector3(x, -2.6 + h * 0.5, z))
+		# Ikkunarivit etuseinään.
+		var rows := int(h / 3.0)
+		for r in rows:
+			for c in 3:
+				if rng.randf() < 0.35:
+					continue
+				var win := _put(b, _box_mesh(Vector3(w * 0.18, 1.1, 0.1)), lit if rng.randf() < 0.45 else dark_win,
+					Vector3((float(c) - 1.0) * w * 0.28, -h * 0.5 + 2.0 + float(r) * 3.0, w * 0.5 + 0.05))
+		if i % 5 == 0:
+			_put(b, _box_mesh(Vector3(0.3, 6.0, 0.3)), ArtStyle.flat_material(Color("c0c4cc"), 0.5), Vector3(0, h * 0.5 + 3.0, 0))
+	var pole := ArtStyle.flat_material(Color("2a2c34"), 0.5)
+	var lamp := ArtStyle.flat_material(Color("fff0b0"), 0.3, 2.4)
+	for i in 10:
+		var x := _side_x(rng)
+		var z := rng.randf_range(-3.5, -9.0)
+		_put(parent, _box_mesh(Vector3(0.18, 4.0, 0.18)), pole, Vector3(x, 2.25, z), true)
+		_put(parent, _box_mesh(Vector3(0.9, 0.18, 0.18)), pole, Vector3(x + 0.35, 4.2, z))
+		_put(parent, _box_mesh(Vector3(0.4, 0.25, 0.4)), lamp, Vector3(x + 0.7, 4.05, z))
+	var cone_mat := ArtStyle.flat_material(Color("ff7a2a"), 0.5)
+	for i in 14:
+		_put(parent, _cone_mesh(0.25, 0.7), cone_mat, Vector3(_side_x(rng), 0.6, rng.randf_range(-3.0, -8.0)), true)
+	_scatter_kit(parent, "tree", 7, Vector2(2.8, 3.8), rng, true)
+	_scatter_kit(parent, "hedge", 6, Vector2(0.9, 1.1), rng, true)
+
+
+## Linna: tornit kartiokattoineen ja lippuineen, muurit ja havupuut.
+func _scatter_castle(parent: Node3D, rng: RandomNumberGenerator) -> void:
+	var stone := ArtStyle.soft_material(Color("9a948a"), Color(1.12, 1.1, 1.05), false, 20.0, -2.6)
+	var roof := ArtStyle.soft_material(Color("3a5aa8"), Color(1.1, 1.1, 1.2), false, 10.0, 10.0)
+	var flag_mats := [ArtStyle.flat_material(Color("e83a3a"), 0.5), ArtStyle.flat_material(Color("ffd64a"), 0.5)]
+	# Iso linna taustalla.
+	var cx := 30.0
+	var cz := -60.0
+	_put(parent, _box_mesh(Vector3(40.0, 14.0, 6.0)), stone, Vector3(cx, 4.4, cz))
+	for k in 8:
+		_put(parent, _box_mesh(Vector3(2.4, 2.0, 6.2)), stone, Vector3(cx - 18.0 + float(k) * 5.1, 12.4, cz))
+	for t in 4:
+		var tx := cx - 20.0 + float(t) * 13.3
+		var th := 22.0 if t == 1 or t == 2 else 18.0
+		var tower := MeshInstance3D.new()
+		var cyl := CylinderMesh.new()
+		cyl.top_radius = 3.0
+		cyl.bottom_radius = 3.3
+		cyl.height = th
+		cyl.radial_segments = 12
+		tower.mesh = cyl
+		tower.material_override = stone
+		tower.position = Vector3(tx, -2.6 + th * 0.5, cz + 1.0)
+		tower.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(tower)
+		_put(parent, _cone_mesh(3.8, 7.0, 12), roof, Vector3(tx, -2.6 + th + 3.5, cz + 1.0))
+		_put(parent, _box_mesh(Vector3(0.15, 3.0, 0.15)), ArtStyle.flat_material(Color("4a3a2a"), 0.6), Vector3(tx, -2.6 + th + 8.5, cz + 1.0))
+		var flag := _put(parent, _box_mesh(Vector3(2.0, 1.2, 0.08)), flag_mats[t % 2], Vector3(tx + 1.0, -2.6 + th + 9.4, cz + 1.0))
+		_spinners.append([flag, Vector3.UP, 0.0, flag.position.y, 1.3])
+	# Pienempiä torneja sivuille.
+	for i in 5:
+		var x := rng.randf_range(-90.0, -20.0) if i % 2 == 0 else rng.randf_range(70.0, 110.0)
+		var z := rng.randf_range(-35.0, -55.0)
+		var h := rng.randf_range(10.0, 16.0)
+		_put(parent, _box_mesh(Vector3(4.0, h, 4.0)), stone, Vector3(x, -2.6 + h * 0.5, z))
+		_put(parent, _cone_mesh(3.4, 5.0, 4), roof, Vector3(x, -2.6 + h + 2.5, z)).rotation.y = PI * 0.25
+	_scatter_kit(parent, "tree-pine", 16, Vector2(4.0, 5.5), rng, true)
+	_scatter_kit(parent, "fence-straight", 8, Vector2(1.0, 1.2), rng, true)
+	_scatter_kit(parent, "rocks", 8, Vector2(0.5, 0.9), rng)
+	_scatter_kit(parent, "grass", 26, Vector2(0.35, 0.5), rng)
+
+
+## Pariisi: Eiffel-torni, kermanväriset talot sinisine kattoineen, katulamput ja puut.
+func _scatter_paris(parent: Node3D, rng: RandomNumberGenerator) -> void:
+	var iron := ArtStyle.soft_material(Color("6a5a4a"), Color(1.2, 1.1, 1.0), false, 40.0, -2.6)
+	var ex := 26.0
+	var ez := -55.0
+	# Eiffel-torni: neljä kaltevaa jalkaa, tasanteet ja kapeneva ylärunko.
+	for lx in [-1.0, 1.0]:
+		for lz in [-1.0, 1.0]:
+			var leg := _put(parent, _box_mesh(Vector3(1.4, 18.0, 1.4)), iron, Vector3(ex + lx * 4.6, 6.0, ez + lz * 4.6))
+			leg.rotation = Vector3(lz * 0.32, 0.0, -lx * 0.32)
+	_put(parent, _box_mesh(Vector3(13.0, 1.2, 13.0)), iron, Vector3(ex, 5.4, ez))
+	_put(parent, _box_mesh(Vector3(8.0, 1.0, 8.0)), iron, Vector3(ex, 14.6, ez))
+	var mid := MeshInstance3D.new()
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 0.8
+	cyl.bottom_radius = 3.6
+	cyl.height = 22.0
+	cyl.radial_segments = 4
+	mid.mesh = cyl
+	mid.material_override = iron
+	mid.rotation.y = PI * 0.25
+	mid.position = Vector3(ex, 26.0, ez)
+	mid.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mid)
+	_put(parent, _box_mesh(Vector3(2.4, 0.8, 2.4)), iron, Vector3(ex, 37.2, ez))
+	_put(parent, _cone_mesh(0.9, 6.0, 4), iron, Vector3(ex, 40.6, ez))
+	_put(parent, _box_mesh(Vector3(0.6, 0.6, 0.6)), ArtStyle.flat_material(Color("ffe08a"), 0.3, 2.0), Vector3(ex, 43.8, ez))
+	# Haussmann-talot.
+	var cream := ArtStyle.soft_material(Color("f0e0c8"), Color(1.05, 1.0, 0.95), false, 20.0, -2.6)
+	var slate := ArtStyle.soft_material(Color("5a6a8a"), Color(1.1, 1.1, 1.2), false, 6.0, 8.0)
+	var win := ArtStyle.flat_material(Color("3a4a6a"), 0.3)
+	for i in 18:
+		var x := rng.randf_range(-100.0, 110.0)
+		if absf(x - ex) < 12.0:
+			x += 24.0
+		var z := rng.randf_range(-30.0, -48.0)
+		var w := rng.randf_range(7.0, 11.0)
+		var h := rng.randf_range(10.0, 15.0)
+		var house := _put(parent, _box_mesh(Vector3(w, h, 6.0)), cream, Vector3(x, -2.6 + h * 0.5, z))
+		var r := _put(parent, _box_mesh(Vector3(w + 0.4, 2.6, 5.0)), slate, Vector3(0.0, h * 0.5 + 1.0, 0.0))
+		r.rotation.x = 0.0
+		r.scale = Vector3(1.0, 1.0, 0.8)
+		for row in 3:
+			for col in int(w / 2.2):
+				_put(house, _box_mesh(Vector3(0.9, 1.4, 0.1)), win, Vector3(-w * 0.5 + 1.2 + float(col) * 2.2, -h * 0.5 + 3.0 + float(row) * 3.4, 3.05))
+	var lamp_pole := ArtStyle.flat_material(Color("1a2a20"), 0.5)
+	var lamp := ArtStyle.flat_material(Color("fff0c0"), 0.3, 2.2)
+	for i in 9:
+		var x := _side_x(rng)
+		var z := rng.randf_range(-3.5, -8.5)
+		_put(parent, _box_mesh(Vector3(0.16, 3.6, 0.16)), lamp_pole, Vector3(x, 2.05, z), true)
+		_put(parent, _box_mesh(Vector3(0.45, 0.55, 0.45)), lamp, Vector3(x, 4.1, z))
+	_scatter_kit(parent, "tree", 12, Vector2(3.0, 4.0), rng, true)
+	_scatter_kit(parent, "flowers", 24, Vector2(0.45, 0.6), rng)
+	_scatter_kit(parent, "hedge", 8, Vector2(0.9, 1.1), rng, true)
 
 
 ## X-koordinaatti taustarekvisiitalle: painottuu pelialueen sivuille, jotta

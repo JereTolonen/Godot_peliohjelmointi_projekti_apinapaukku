@@ -17,7 +17,10 @@ const Vfx := preload("res://scenes/visual/vfx.gd")
 ##   shield   KRISTALLIAPINA    Kristallikilpi: ajoittain osumat eivät vahingoita
 ##   holo     MUUKALAISAPINA    Hologrammit: harhakuvat ottavat osumat vastaan
 ##   tornado  MYRSKYAPINA       Pyörremyrsky kulkee kentän poikki ja nostaa banaaneja
-@export_enum("rock", "frost", "sand", "glue", "lava", "gravity", "orbit", "wave", "shield", "holo", "tornado") var kind: String = "rock"
+@export_enum("rock", "frost", "sand", "glue", "lava", "gravity", "orbit", "wave", "shield", "holo", "tornado", "crane", "guards", "balloon") var kind: String = "rock"
+##   crane    RAKENNUSAPINA     Torninosturi pudottaa teräspalkkeja linnan suojaksi
+##   guards   RITARIAPINA       Kutsuu enintään kaksi vartija-apinaa (nekin pitää kaataa)
+##   balloon  TAITEILIJA-APINA  Nousee ilmapalloilla ylös ja leijuu hetken
 ## Sekunteja kykyjen välillä (satunnainen väliltä).
 @export var interval: Vector2 = Vector2(4.5, 6.5)
 ## Ensimmäinen käyttö vasta tämän jälkeen (kenttä ehtii asettua).
@@ -36,6 +39,9 @@ const LINES := {
 	"shield": ["Kristallikilpi!", "Et läpäise tätä!", "Kimallus!"],
 	"holo": ["Kumpi olen minä?", "Hihii, väärä!", "Hologrammi!"],
 	"tornado": ["Pyörremyrsky!", "Tuuli nousee!", "Wuuush!"],
+	"crane": ["Nosturi, laske!", "Lisää palkkeja!", "Rakennetaan!"],
+	"guards": ["Vartijat, apuun!", "Puolustakaa linnaa!", "Hyökkäykseen!"],
+	"balloon": ["Au revoir!", "Ooh là là!", "Taide lentää!"],
 }
 
 var _boss: RigidBody3D = null
@@ -105,6 +111,324 @@ func _physics_process(delta: float) -> void:
 			_glue()
 		"gravity":
 			_flip_wells()
+		"orbit":
+			_moon_speed = -_moon_speed
+			_say(0.4)
+		"wave":
+			_wave()
+		"shield":
+			_shield_left = 2.6
+			_say(0.6)
+		"holo":
+			_spawn_holograms()
+		"tornado":
+			_start_tornado()
+		"crane":
+			_drop_beam()
+		"guards":
+			_summon_guard()
+		"balloon":
+			_balloon_up()
+
+
+# --- Torninosturi -----------------------------------------------------------------
+
+var _beams_left: int = 4
+
+
+func _drop_beam() -> void:
+	if _beams_left <= 0:
+		return
+	_beams_left -= 1
+	var block_scene := load("res://scenes/includes/blocks/block.tscn") as PackedScene
+	if block_scene == null:
+		return
+	var beam := block_scene.instantiate() as RigidBody3D
+	var mesh := beam.get_node_or_null("MeshInstance3D") as MeshInstance3D
+	var shape := beam.get_node_or_null("CollisionShape3D") as CollisionShape3D
+	var size := Vector3(2.4, 0.4, 1.2)
+	if mesh != null:
+		var bm := BoxMesh.new()
+		bm.size = size
+		var m := StandardMaterial3D.new()
+		m.albedo_color = Color("d84a2a")
+		m.roughness = 0.5
+		m.metallic = 0.4
+		bm.material = m
+		mesh.mesh = bm
+	if shape != null:
+		var bs := BoxShape3D.new()
+		bs.size = size
+		shape.shape = bs
+	beam.name = "SteelBeam"
+	beam.set("max_health", 30.0)
+	beam.set("start_asleep", false)
+	beam.mass = 2.0
+	_boss.get_parent().add_child(beam)
+	beam.global_position = Vector3(_rng.randf_range(4.0, 9.0), 14.0, 0.0)
+	_sound("launch", -4.0, 0.5)
+	_say(0.5)
+
+
+# --- Vartijat ---------------------------------------------------------------------
+
+var _guards_left: int = 2
+
+
+func _summon_guard() -> void:
+	if _guards_left <= 0:
+		return
+	_guards_left -= 1
+	var enemy_scene := load("res://scenes/includes/characters/enemy_plain.tscn") as PackedScene
+	if enemy_scene == null:
+		return
+	var guard := enemy_scene.instantiate() as Node3D
+	guard.name = "Guard"
+	# Laskeutuminen ei saa tappaa vartijaa (muuten pelaaja saisi ilmaiset pisteet).
+	guard.set("grace_time", 2.5)
+	_boss.get_parent().add_child(guard)
+	guard.global_position = _boss.global_position + Vector3(-2.2, 1.4, 0.0)
+	Vfx.star_burst(_world(), guard.global_position, 10)
+	GridWall.splash(get_tree(), guard.global_position, 0.8, Color("e83a3a"))
+	_sound("level_start", -6.0, 1.2)
+	_say(0.8)
+
+
+# --- Ilmapallot -------------------------------------------------------------------
+
+var _balloons: Node3D = null
+
+
+func _balloon_up() -> void:
+	if _balloons != null:
+		return
+	_balloons = Node3D.new()
+	_balloons.name = "Balloons"
+	var colors := [Color("ff4a8a"), Color("4ac8ff"), Color("ffd64a")]
+	for i in 3:
+		var b := MeshInstance3D.new()
+		var sm := SphereMesh.new()
+		sm.radius = 0.6
+		sm.height = 1.4
+		b.mesh = sm
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = colors[i]
+		mat.roughness = 0.25
+		b.material_override = mat
+		b.position = Vector3((float(i) - 1.0) * 0.9, 6.5 + absf(float(i) - 1.0) * -0.4, 0.0)
+		_balloons.add_child(b)
+	_boss.add_child(_balloons)
+	_boss.set("_self_jump_left", 6.0)
+	var start := _boss.global_position
+	_boss.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+	_boss.freeze = true
+	var t := _boss.create_tween()
+	t.tween_property(_boss, "global_position", start + Vector3(0.0, 3.2, 0.0), 1.0).set_trans(Tween.TRANS_SINE)
+	t.tween_interval(2.6)
+	t.tween_property(_boss, "global_position", start, 0.9).set_trans(Tween.TRANS_SINE)
+	t.tween_callback(func() -> void:
+		if is_instance_valid(_balloons):
+			_balloons.queue_free()
+		_balloons = null
+		if is_instance_valid(_boss):
+			_boss.freeze = false
+			_boss.set("_self_jump_left", 0.5))
+	_say(0.7)
+
+
+# --- Kiertävä kuu ---------------------------------------------------------------
+
+var _moon: AnimatableBody3D = null
+var _moon_angle: float = 0.0
+var _moon_speed: float = 1.6
+
+
+func _update_moon(delta: float) -> void:
+	if _moon == null:
+		_moon = AnimatableBody3D.new()
+		_moon.name = "BossMoon"
+		_moon.sync_to_physics = false
+		var shape := CollisionShape3D.new()
+		var sphere := SphereShape3D.new()
+		sphere.radius = 0.8
+		shape.shape = sphere
+		_moon.add_child(shape)
+		var mesh := MeshInstance3D.new()
+		var sm := SphereMesh.new()
+		sm.radius = 0.8
+		sm.height = 1.6
+		mesh.mesh = sm
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color("e8e0f8")
+		mat.emission_enabled = true
+		mat.emission = Color("ffe9a0")
+		mat.emission_energy_multiplier = 1.2
+		mesh.material_override = mat
+		_moon.add_child(mesh)
+		_boss.get_parent().add_child(_moon)
+		_moon.add_collision_exception_with(_boss)
+		_boss.add_collision_exception_with(_moon)
+	_moon_angle += _moon_speed * delta
+	var center := _boss.global_position + Vector3(0.0, 2.2, 0.0)
+	_moon.global_position = center + Vector3(cos(_moon_angle) * 3.4, sin(_moon_angle) * 2.6, 0.0)
+
+
+func _exit_tree() -> void:
+	if is_instance_valid(_moon):
+		_moon.queue_free()
+
+
+# --- Hyökyaalto -------------------------------------------------------------------
+
+func _wave() -> void:
+	var moved := 0
+	for node in get_tree().get_nodes_in_group("bananas"):
+		var b := node as RigidBody3D
+		if b == null or b.freeze or b.global_position.y > 2.5:
+			continue
+		b.linear_velocity = Vector3(-9.0, 3.0, 0.0)
+		moved += 1
+	for i in 5:
+		GridWall.splash(get_tree(), Vector3(12.0 - float(i) * 5.0, 0.8, 0.0), 0.7, Color("4fc6ff"))
+	Vfx.feather_puff(_world(), _boss.global_position + Vector3(-2.0, 0.5, 0.0))
+	_sound("launch", 0.0, 0.45)
+	_say(0.6)
+
+
+# --- Kristallikilpi ---------------------------------------------------------------
+
+var _shield_left: float = 0.0
+var _shield_mesh: MeshInstance3D = null
+
+
+func _update_shield(delta: float) -> void:
+	_shield_left = maxf(_shield_left - delta, 0.0)
+	var on := _shield_left > 0.0
+	_boss.set("shielded", on)
+	if _shield_mesh == null:
+		_shield_mesh = MeshInstance3D.new()
+		var sm := SphereMesh.new()
+		sm.radius = 2.6
+		sm.height = 5.2
+		sm.radial_segments = 6
+		sm.rings = 3
+		_shield_mesh.mesh = sm
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color(0.75, 0.5, 1.0, 0.28)
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.emission_enabled = true
+		mat.emission = Color(0.7, 0.45, 1.0)
+		mat.emission_energy_multiplier = 1.2
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		_shield_mesh.material_override = mat
+		_shield_mesh.position = Vector3(0.0, 2.0, 0.0)
+		_boss.add_child(_shield_mesh)
+	_shield_mesh.visible = on
+	if on:
+		_shield_mesh.rotation.y += delta * 1.5
+
+
+# --- Hologrammit ------------------------------------------------------------------
+
+func _spawn_holograms() -> void:
+	var model := _boss.get_node_or_null("Visual/Wobble") as Node3D
+	if model == null or get_tree().get_nodes_in_group("holograms").size() > 0:
+		return
+	for i in 2:
+		var holo := StaticBody3D.new()
+		holo.name = "Hologram"
+		holo.add_to_group("holograms")
+		var shape := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = Vector3(2.4, 2.8, 1.5)
+		shape.shape = box
+		shape.position.y = 1.4
+		holo.add_child(shape)
+		var copy := model.duplicate(0) as Node3D
+		copy.set_script(null)
+		holo.add_child(copy)
+		for node in copy.find_children("*", "MeshInstance3D", true, false):
+			var mat := StandardMaterial3D.new()
+			mat.albedo_color = Color(0.4, 1.0, 0.6, 0.35)
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.emission_enabled = true
+			mat.emission = Color(0.3, 1.0, 0.5)
+			mat.emission_energy_multiplier = 0.8
+			(node as MeshInstance3D).material_override = mat
+		_boss.get_parent().add_child(holo)
+		# Leijuvat pomon yläpuolella vasemmalla ja oikealla, eivät linnan päällä.
+		var x := _boss.global_position.x + (-1.6 if i == 0 else 1.4)
+		holo.global_position = Vector3(x, _boss.global_position.y + 3.6 + float(i) * 0.6, 0.0)
+		holo.scale = Vector3.ONE * 0.55
+		# Hologrammi puhkeaa, kun banaani osuu siihen, tai häviää itsestään.
+		var area := Area3D.new()
+		var ashape := CollisionShape3D.new()
+		ashape.shape = box
+		ashape.position.y = 1.4
+		area.add_child(ashape)
+		holo.add_child(area)
+		area.body_entered.connect(func(body: Node) -> void:
+			if body.is_in_group("bananas") and is_instance_valid(holo):
+				GridWall.splash(get_tree(), holo.global_position, 0.8, Color("6aff8a"))
+				Vfx.star_burst(_world(), holo.global_position + Vector3(0, 1.4, 0), 8)
+				holo.queue_free())
+		get_tree().create_timer(5.5, false).timeout.connect(func() -> void:
+			if is_instance_valid(holo):
+				holo.queue_free())
+	_sound("ability_splitter", -4.0, 0.8)
+	_say(0.6)
+
+
+# --- Pyörremyrsky -----------------------------------------------------------------
+
+var _tornado: Node3D = null
+var _tornado_left: float = 0.0
+
+
+func _start_tornado() -> void:
+	if _tornado == null:
+		_tornado = Node3D.new()
+		_tornado.name = "Tornado"
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color(0.85, 0.9, 1.0, 0.35)
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		for i in 5:
+			var ring := MeshInstance3D.new()
+			var cyl := CylinderMesh.new()
+			cyl.top_radius = 0.5 + float(i) * 0.35
+			cyl.bottom_radius = 0.35 + float(i) * 0.35
+			cyl.height = 1.4
+			cyl.cap_top = false
+			cyl.cap_bottom = false
+			ring.mesh = cyl
+			ring.material_override = mat
+			ring.position.y = 0.7 + float(i) * 1.4
+			_tornado.add_child(ring)
+		_boss.get_parent().add_child(_tornado)
+	_tornado.visible = true
+	_tornado.global_position = Vector3(_boss.global_position.x - 2.0, 0.0, 0.0)
+	_tornado_left = 4.0
+	_say(0.6)
+	_sound("launch", -2.0, 0.4)
+
+
+func _update_tornado(delta: float) -> void:
+	if _tornado == null or _tornado_left <= 0.0:
+		if _tornado != null:
+			_tornado.visible = false
+		return
+	_tornado_left -= delta
+	_tornado.global_position.x -= 3.2 * delta
+	_tornado.rotation.y += delta * 9.0
+	var tx := _tornado.global_position.x
+	for node in get_tree().get_nodes_in_group("bananas"):
+		var b := node as RigidBody3D
+		if b != null and not b.freeze and absf(b.global_position.x - tx) < 1.8 and b.global_position.y < 8.0:
+			b.linear_velocity.y += 26.0 * delta
+			b.linear_velocity.x *= 1.0 - 1.5 * delta
+	if fmod(_tornado_left, 0.5) < delta:
+		GridWall.splash(get_tree(), Vector3(tx, 2.5, 0.0), 0.5, Color("c8d8ff"))
 
 
 func _say(chance: float = 0.5) -> void:

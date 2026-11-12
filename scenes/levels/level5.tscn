@@ -201,54 +201,54 @@ ammo = PackedStringArray("normal", "speedy", "normal", "exploding", "exploding")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.829, 0.938, 0)
 script = ExtResource("4_lsgss")
 
-[node name="Walls" type="Node3D" parent="." unique_id=1975473107]
+[node name="Walls" type="Node3D" parent="." unique_id=2064290712]
 
-[node name="WallLeft" type="StaticBody3D" parent="Walls" unique_id=255493946]
+[node name="WallLeft" type="StaticBody3D" parent="Walls" unique_id=222893164]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 2.25, 0)
 collision_layer = 4
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallLeft" unique_id=1991696002]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallLeft" unique_id=1675017980]
 shape = SubResource("BoxShape3D_lsgss")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Walls/WallLeft" unique_id=48871159]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Walls/WallLeft" unique_id=337361575]
 mesh = SubResource("BoxMesh_vnf24")
 
-[node name="WallRight" type="StaticBody3D" parent="Walls" unique_id=1389699696]
+[node name="WallRight" type="StaticBody3D" parent="Walls" unique_id=521420839]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.25, 0)
 collision_layer = 4
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallRight" unique_id=1700193267]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WallRight" unique_id=10194041]
 shape = SubResource("BoxShape3D_pm1y0")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Walls/WallRight" unique_id=2090162153]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Walls/WallRight" unique_id=1866851771]
 mesh = SubResource("BoxMesh_kykwg")
 
-[node name="KillZones" type="Node3D" parent="." unique_id=1252458506]
+[node name="KillZones" type="Node3D" parent="." unique_id=817763769]
 
-[node name="KillZoneLeft" type="Area3D" parent="KillZones" unique_id=1067929378]
+[node name="KillZoneLeft" type="Area3D" parent="KillZones" unique_id=573942482]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 0, 0)
 script = ExtResource("5_v0vb7")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneLeft" unique_id=1035343146]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneLeft" unique_id=347583548]
 shape = SubResource("BoxShape3D_iyn63")
 
-[node name="KillZoneRight" type="Area3D" parent="KillZones" unique_id=794542868]
+[node name="KillZoneRight" type="Area3D" parent="KillZones" unique_id=647019570]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 0, 0)
 script = ExtResource("5_v0vb7")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneRight" unique_id=1655890729]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneRight" unique_id=298474558]
 shape = SubResource("BoxShape3D_1ix84")
 
-[node name="KillZoneBottom" type="Area3D" parent="KillZones" unique_id=1768050618]
+[node name="KillZoneBottom" type="Area3D" parent="KillZones" unique_id=441490665]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10, 0)
 script = ExtResource("5_v0vb7")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneBottom" unique_id=1192951652]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZones/KillZoneBottom" unique_id=461544108]
 shape = SubResource("BoxShape3D_4x4hb")
 
-[node name="Blocks" type="Node3D" parent="." unique_id=2084797906]
+[node name="Blocks" type="Node3D" parent="." unique_id=1284538952]
 
 [node name="Stone1" parent="Blocks" unique_id=250334520 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 1.3, 0)
@@ -264,7 +264,7 @@ mesh = SubResource("BoxMesh_xrw0o")
 [node name="CollisionShape3D" parent="Blocks/Stone1" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_4r5lo")
 
-[node name="Stone2" parent="Blocks" unique_id=1001209078 instance=ExtResource("6_sd6f7")]
+[node name="Stone2" parent="Blocks" unique_id=1930258747 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 1.3, 0)
 mass = 1.92
 physics_material_override = SubResource("PhysicsMaterial_po1mw")
@@ -278,7 +278,7 @@ mesh = SubResource("BoxMesh_d75b2")
 [node name="CollisionShape3D" parent="Blocks/Stone2" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_snswl")
 
-[node name="Stone3" parent="Blocks" unique_id=1688991695 instance=ExtResource("6_sd6f7")]
+[node name="Stone3" parent="Blocks" unique_id=1590990905 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.35, 0)
 mass = 3.96
 physics_material_override = SubResource("PhysicsMaterial_vyr3h")
@@ -292,7 +292,7 @@ mesh = SubResource("BoxMesh_pxqp1")
 [node name="CollisionShape3D" parent="Blocks/Stone3" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_idwux")
 
-[node name="Wood1" parent="Blocks" unique_id=965863115 instance=ExtResource("6_sd6f7")]
+[node name="Wood1" parent="Blocks" unique_id=1803432375 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 3.3, 0)
 mass = 0.672
 physics_material_override = SubResource("PhysicsMaterial_nhdg1")
@@ -305,7 +305,7 @@ mesh = SubResource("BoxMesh_r571g")
 [node name="CollisionShape3D" parent="Blocks/Wood1" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_pxgjg")
 
-[node name="Wood2" parent="Blocks" unique_id=1150455950 instance=ExtResource("6_sd6f7")]
+[node name="Wood2" parent="Blocks" unique_id=728659200 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.9, 3.3, 0)
 mass = 0.672
 physics_material_override = SubResource("PhysicsMaterial_gdo0w")
@@ -318,7 +318,7 @@ mesh = SubResource("BoxMesh_q3cny")
 [node name="CollisionShape3D" parent="Blocks/Wood2" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_xlj5p")
 
-[node name="Wood3" parent="Blocks" unique_id=1220818034 instance=ExtResource("6_sd6f7")]
+[node name="Wood3" parent="Blocks" unique_id=507547219 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 4.25, 0)
 mass = 1.296
 physics_material_override = SubResource("PhysicsMaterial_h7anq")
@@ -331,7 +331,7 @@ mesh = SubResource("BoxMesh_gw3dk")
 [node name="CollisionShape3D" parent="Blocks/Wood3" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_atimw")
 
-[node name="Ice1" parent="Blocks" unique_id=1165364574 instance=ExtResource("6_sd6f7")]
+[node name="Ice1" parent="Blocks" unique_id=1203253218 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 5, 0)
 mass = 0.84
 physics_material_override = SubResource("PhysicsMaterial_34tlj")
@@ -345,7 +345,7 @@ mesh = SubResource("BoxMesh_jjbvk")
 [node name="CollisionShape3D" parent="Blocks/Ice1" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_bwsbl")
 
-[node name="Wood4" parent="Blocks" unique_id=724345231 instance=ExtResource("6_sd6f7")]
+[node name="Wood4" parent="Blocks" unique_id=1404720361 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.8, 1.5, 0)
 mass = 1.152
 physics_material_override = SubResource("PhysicsMaterial_0mp1a")
@@ -358,7 +358,7 @@ mesh = SubResource("BoxMesh_7vymo")
 [node name="CollisionShape3D" parent="Blocks/Wood4" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_uxru4")
 
-[node name="Wood5" parent="Blocks" unique_id=1819272765 instance=ExtResource("6_sd6f7")]
+[node name="Wood5" parent="Blocks" unique_id=124624718 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.2, 1.5, 0)
 mass = 1.152
 physics_material_override = SubResource("PhysicsMaterial_3mmk6")
@@ -371,7 +371,7 @@ mesh = SubResource("BoxMesh_6a81h")
 [node name="CollisionShape3D" parent="Blocks/Wood5" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_pgrcc")
 
-[node name="Wood6" parent="Blocks" unique_id=246489568 instance=ExtResource("6_sd6f7")]
+[node name="Wood6" parent="Blocks" unique_id=1657117237 instance=ExtResource("6_sd6f7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 2.75, 0)
 mass = 1.632
 physics_material_override = SubResource("PhysicsMaterial_bd6v3")
@@ -384,21 +384,21 @@ mesh = SubResource("BoxMesh_58l6e")
 [node name="CollisionShape3D" parent="Blocks/Wood6" index="1" unique_id=1725876668]
 shape = SubResource("BoxShape3D_vhr3a")
 
-[node name="Enemies" type="Node3D" parent="." unique_id=1299815776]
+[node name="Enemies" type="Node3D" parent="." unique_id=651878081]
 
 [node name="Enemy1" type="RigidBody3D" parent="Enemies" unique_id=1288054795 instance=ExtResource("4_dju2a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.6, 0)
 script = ExtResource("9_pm1y0")
 
-[node name="Enemy2" type="RigidBody3D" parent="Enemies" unique_id=405288403 instance=ExtResource("4_dju2a")]
+[node name="Enemy2" type="RigidBody3D" parent="Enemies" unique_id=1778644577 instance=ExtResource("4_dju2a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 3.1, 0)
 script = ExtResource("9_pm1y0")
 
-[node name="Enemy3" type="RigidBody3D" parent="Enemies" unique_id=98340492 instance=ExtResource("4_dju2a")]
+[node name="Enemy3" type="RigidBody3D" parent="Enemies" unique_id=1815980979 instance=ExtResource("4_dju2a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.3, 0.6, 0)
 script = ExtResource("9_pm1y0")
 
-[node name="Hints" type="CanvasLayer" parent="." unique_id=2145323130]
+[node name="Hints" type="CanvasLayer" parent="." unique_id=1166805033]
 script = ExtResource("10_2eb3b")
 steps = PackedStringArray("Kivi kestää enemmän kuin puu.", "Apina, joka lentää kentän reunan yli, tippuu alueen ulkopuolelle ja kuolee.", "Yhdistä kaikki oppimasi. Onnea!")
 

@@ -18,7 +18,7 @@ extends Node3D
 ## Turkin väri (apinamallin tekstuuri kerrotaan tällä). Valkoinen = ennallaan.
 @export var fur_tint: Color = Color.WHITE
 ## Asuste: none, moss, ice, glasses, candy, flame, king.
-@export_enum("none", "moss", "ice", "glasses", "candy", "flame", "king", "astronaut", "pirate", "crystal", "alien", "storm") var accessory: String = "none"
+@export_enum("none", "moss", "ice", "glasses", "candy", "flame", "king", "astronaut", "pirate", "crystal", "alien", "storm", "hardhat", "knight", "beret") var accessory: String = "none"
 ## Mulkosilmät (pois, jos asuste peittää silmät, esim. aurinkolasit).
 @export var googly_eyes: bool = true
 ## Vihaiset kulmakarvat.
@@ -381,6 +381,63 @@ func _build_accessory() -> void:
 			eye.position = Vector3(0.0, 1.38 * s, 0.62 * s)
 			var pupil := _sphere(0.08 * s, _mat(Color("101010")))
 			pupil.position = Vector3(0.0, 1.38 * s, 0.76 * s)
+		"hardhat":
+			var yellow := _mat(Color("ffc21a"), 0.2)
+			var helmet := _sphere(0.62 * s, yellow)
+			helmet.position = Vector3(0.0, top - 0.05 * s, 0.0)
+			helmet.scale = Vector3(1.0, 0.55, 1.0)
+			var brim := _box(Vector3(1.4, 0.06, 1.3) * s, yellow)
+			brim.position = Vector3(0.0, top - 0.12 * s, 0.12 * s)
+			var vest := _box(Vector3(1.6, 0.18, 0.06) * s, _mat(Color("ff7a1a"), 0.3))
+			vest.position = Vector3(0.0, 0.55 * s, 0.66 * s)
+			var stripe := _box(Vector3(1.6, 0.06, 0.07) * s, _mat(Color("f0f0f0"), 0.8))
+			stripe.position = Vector3(0.0, 0.55 * s, 0.68 * s)
+			var hammer := _box(Vector3(0.08, 0.7, 0.08) * s, _mat(Color("8a5a2a")))
+			hammer.position = Vector3(0.95 * s, 0.7 * s, 0.3 * s)
+			hammer.rotation.z = -0.4
+			var head := _box(Vector3(0.36, 0.16, 0.16) * s, _mat(Color("7a8090")))
+			head.position = Vector3(1.1 * s, 1.0 * s, 0.3 * s)
+			head.rotation.z = -0.4
+		"knight":
+			var steel := _mat(Color("b8c0cc"), 0.15)
+			var helm := _sphere(0.66 * s, steel)
+			helm.position = Vector3(0.0, top - 0.15 * s, 0.0)
+			helm.scale = Vector3(1.0, 0.8, 1.0)
+			var visor := _box(Vector3(0.9, 0.08, 0.06) * s, _mat(Color("2a2c34")))
+			visor.position = Vector3(0.0, top - 0.2 * s, 0.62 * s)
+			var plume := _sphere(0.2 * s, _mat(Color("e83a3a"), 0.3))
+			plume.position = Vector3(0.0, top + 0.4 * s, -0.1 * s)
+			plume.scale = Vector3(0.6, 1.6, 1.4)
+			var shield := _box(Vector3(0.75, 0.95, 0.08) * s, _mat(Color("3a5aa8")))
+			shield.position = Vector3(-0.95 * s, 0.7 * s, 0.35 * s)
+			shield.rotation.y = 0.5
+			var cross := _box(Vector3(0.12, 0.7, 0.09) * s, _mat(Color("ffd64a"), 0.4))
+			cross.position = Vector3(-0.95 * s, 0.72 * s, 0.4 * s)
+			cross.rotation.y = 0.5
+			var sword := _box(Vector3(0.07, 1.2, 0.03) * s, steel)
+			sword.position = Vector3(1.0 * s, 0.9 * s, 0.3 * s)
+			sword.rotation.z = -0.25
+		"beret":
+			var beret := _sphere(0.55 * s, _mat(Color("2a2a3a")))
+			beret.position = Vector3(0.15 * s, top + 0.02 * s, 0.0)
+			beret.scale = Vector3(1.1, 0.32, 1.0)
+			beret.rotation.z = -0.2
+			var nub := _sphere(0.06 * s, _mat(Color("2a2a3a")))
+			nub.position = Vector3(0.2 * s, top + 0.2 * s, 0.0)
+			var stache := _mat(Color("2a1a10"))
+			for side in [-1.0, 1.0]:
+				var m := _box(Vector3(0.32, 0.08, 0.06) * s, stache)
+				m.position = Vector3(side * 0.18 * s, 0.75 * s, 0.7 * s)
+				m.rotation.z = side * 0.3
+			# Raidallinen paita ja maalauspensseli.
+			for j in 3:
+				var stripe := _box(Vector3(1.55, 0.07, 0.06) * s, _mat(Color("1a2a6a")))
+				stripe.position = Vector3(0.0, (0.25 + 0.16 * j) * s, 0.66 * s)
+			var brush := _box(Vector3(0.06, 0.6, 0.06) * s, _mat(Color("8a5a2a")))
+			brush.position = Vector3(1.0 * s, 0.8 * s, 0.3 * s)
+			brush.rotation.z = -0.5
+			var tip := _sphere(0.08 * s, _mat(Color("ff4a8a"), 0.6))
+			tip.position = Vector3(1.15 * s, 1.08 * s, 0.3 * s)
 		"storm":
 			# Ukkospilvi päälaella ja salamat.
 			var cloud := _mat(Color("8a90a8"))

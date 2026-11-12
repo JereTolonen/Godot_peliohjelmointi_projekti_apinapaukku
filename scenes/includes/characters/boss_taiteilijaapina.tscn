@@ -1,0 +1,56 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://durtkiv7cvqyr" path="res://scenes/includes/characters/enemy_boss.gd" id="1_boss"]
+[ext_resource type="PackedScene" uid="uid://cgf0c4y2iyxda" path="res://assets/mesh/characters/animal-monkey-no-face.glb" id="2_monkey"]
+[ext_resource type="Script" path="res://scenes/includes/characters/boss_silly.gd" id="3_silly"]
+[ext_resource type="Script" path="res://scenes/includes/characters/boss_ability.gd" id="4_ability"]
+
+[sub_resource type="PhysicsMaterial" id="phys"]
+friction = 0.9
+bounce = 0.05
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(4.050, 4.320, 3.510)
+
+[node name="TaiteilijaApina" type="RigidBody3D"]
+physics_material_override = SubResource("phys")
+mass = 10.0
+script = ExtResource("1_boss")
+max_health = 13
+points = 20000
+smoke_size = 2.4
+popup_offset = Vector3(0, 5.02, 0)
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Wobble" type="Node3D" parent="Visual"]
+script = ExtResource("3_silly")
+model_scale = 2.7
+craziness = 1.5
+tongue_color = Color(1.000, 0.290, 0.541, 1)
+fur_tint = Color(0.878, 0.690, 0.502, 1)
+accessory = "beret"
+googly_eyes = true
+angry = false
+
+[node name="Monkey" parent="Visual/Wobble" instance=ExtResource("2_monkey")]
+transform = Transform3D(2.7000, 0, 0, 0, 2.7000, 0, 0, 0, 2.7000, 0.000, 0.000, 0.000)
+
+[node name="HealthLabel" type="Label3D" parent="."]
+transform = Transform3D(1.0000, 0, 0, 0, 1.0000, 0, 0, 0, 1.0000, 0.000, 5.520, 0.000)
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "HP"
+font_size = 64
+outline_size = 16
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1.0000, 0, 0, 0, 1.0000, 0, 0, 0, 1.0000, 0.000, 2.160, 0.000)
+shape = SubResource("shape")
+
+[node name="Ability" type="Node" parent="."]
+script = ExtResource("4_ability")
+kind = "balloon"
+interval = Vector2(6.5, 8.5)
+color = Color(1.000, 0.290, 0.541, 1)

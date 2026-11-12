@@ -10,7 +10,7 @@ extends Node
 ## Levels 1-5 plains (tutorial), 6-10 snow, 11-20 space. Bosses on 10, 15 and 20.
 
 const LEVEL_PATH := "res://scenes/levels/level%d.tscn"
-const LEVEL_COUNT := 110
+const LEVEL_COUNT := 140
 const ENEMY_SCENE := "res://scenes/includes/characters/enemy_plain.tscn"
 const BLOCK_SCENE := "res://scenes/includes/blocks/block.tscn"
 const DYNAMITE_SCENE := "res://scenes/includes/blocks/dynamite.tscn"
@@ -23,7 +23,9 @@ const BOSS_FINAL_SCENE := "res://scenes/includes/characters/boss_final.tscn"
 ## Kuusi maailmaa x 10 tasoa (kuten pelin verkkosivulla). Pomo joka 10. tasolla.
 const WORLD_IDS := ["meadow", "ice", "desert", "candy", "volcano", "apocalypse",
 	# Lisämaailmat 61-110 (pelin alkuperäiset maailmat, joille sivulla ei ole vastinetta).
-	"space", "beach", "cave", "exo", "sky"]
+	"space", "beach", "cave", "exo", "sky",
+	# Kaupunki, linna ja Pariisi 111-140.
+	"city", "castle", "paris"]
 const BOSS_SCENES := [
 	"res://scenes/includes/characters/boss_niittyjatti.tscn",
 	"res://scenes/includes/characters/boss_jaaapina.tscn",
@@ -36,6 +38,9 @@ const BOSS_SCENES := [
 	"res://scenes/includes/characters/boss_kristalliapina.tscn",
 	"res://scenes/includes/characters/boss_muukalaisapina.tscn",
 	"res://scenes/includes/characters/boss_myrskyapina.tscn",
+	"res://scenes/includes/characters/boss_rakennusapina.tscn",
+	"res://scenes/includes/characters/boss_ritariapina.tscn",
+	"res://scenes/includes/characters/boss_taiteilijaapina.tscn",
 ]
 const BOSS_HINTS := [
 	["PÄÄPOMO: NIITTYJÄTTI! Se heittelee kiviä lentoradallesi.", "Kaada kivinen kukkula jättiläisen niskaan."],
@@ -49,6 +54,9 @@ const BOSS_HINTS := [
 	["PÄÄPOMO: KRISTALLIAPINA! Kristallikilpi suojaa sitä välillä.", "Ammu, kun kilpi ei hehku."],
 	["PÄÄPOMO: MUUKALAISAPINA! Hologrammit ottavat osumat vastaan.", "Vain oikea apina kaatuu – hologrammit puhkeavat."],
 	["PÄÄPOMO: MYRSKYAPINA! Pyörremyrsky nostaa banaanit ilmaan.", "Pyörre liikkuu – tähtää sen ohi."],
+	["PÄÄPOMO: RAKENNUSAPINA! Torninosturi pudottaa teräspalkkeja.", "Kaada pomo ennen kuin linna kasvaa liian korkeaksi."],
+	["PÄÄPOMO: RITARIAPINA! Se kutsuu vartijoita apuun.", "Vartijatkin pitää kaataa – käytä pommibanaaneja."],
+	["PÄÄPOMO: TAITEILIJA-APINA! Se lentää ilmapalloilla karkuun.", "Tähtää ylös, kun se leijuu – tai odota laskeutumista."],
 ]
 const LEVEL_SCRIPT := "res://scenes/game/level.gd"
 const KILLZONE_SCRIPT := "res://scenes/includes/killzone.gd"
@@ -111,7 +119,7 @@ func _build_level(n: int) -> int:
 	# 1-10 niityt, 11-20 jäävuoret (luminen maa), 21-50 maa, 51-60 apokalypsin
 	# leijuvat saaret (ei maata).
 	var kind := "plains"
-	if n > 100 or (n > 50 and n <= 70):
+	if (n > 100 and n <= 110) or (n > 50 and n <= 70):
 		kind = "space"
 	elif n > 10 and n <= 20:
 		kind = "snow"
@@ -123,6 +131,11 @@ func _build_level(n: int) -> int:
 	_add_walls(root)
 	_add_killzones(root)
 	var ammo := _mix_characters(root, _fill_level(root, n), n)
+	# Pelattavuus: vähintään apinat + 2 laukausta (myös käsin tehdyillä tasoilla).
+	var en_holder := root.get_node_or_null("Enemies")
+	var en_count := en_holder.get_child_count() if en_holder != null else 0
+	while ammo.length() < en_count + 2:
+		ammo += "n" if ammo.length() % 3 != 2 else "e"
 	var ammo_names := PackedStringArray()
 	for c in ammo:
 		ammo_names.append(AMMO_LETTERS.get(c, "normal"))
@@ -153,6 +166,12 @@ const SPECIAL_CHARACTERS := [
 ## Ensimmäinen ammus pysyy perushahmona. Esittelykentässä uusi hahmo on toisena ja
 ## kentän alkuun tulee vihje.
 func _mix_characters(root: Node, ammo: String, n: int) -> String:
+	# Tasoilla 6+ banaanit valitsee jo _smart_ammo(): lisätään vain esittelyvihje.
+	if n > 5:
+		for spec in SPECIAL_CHARACTERS:
+			if n == int(spec[1]):
+				_intro_hint(root, spec[2], true)
+		return ammo
 	if n == 2:
 		_intro_hint(root, "Vinkki: napauta pommibanaania lennon aikana, niin se räjähtää heti.", false)
 	var unlocked: Array = []
@@ -739,6 +758,9 @@ const WORLD_MATERIALS := {
 	"candy": ["ice", "wood", "ice", "stone"],
 	"apocalypse": ["stone", "stone", "wood", "ice"],
 	"space": ["ice", "stone", "wood", "ice"],
+	"city": ["stone", "stone", "ice", "wood"],
+	"castle": ["stone", "stone", "stone", "wood"],
+	"paris": ["wood", "stone", "ice", "wood"],
 	"beach": ["wood", "wood", "wood", "stone", "ice"],
 	"cave": ["stone", "stone", "wood", "ice", "ice"],
 	"volcano": ["stone", "stone", "stone", "wood"],
@@ -761,6 +783,9 @@ const WORLD_HINTS := {
 	"ice": ["JÄÄVUORET! Jää on liukasta ja särkyy helposti.", "Jäiset rakennelmat sortuvat yhdestä hyvästä osumasta."],
 	"desert": ["AAVIKKOMAA! Apinat rakentavat kivisiä linnoja.", "Etsi linnan heikko kohta ja kaada se."],
 	"candy": ["KARKKIMAA! Sokerirakennelmat näyttävät pehmeiltä – mutta eivät ole.", "Kova osuma hajottaa karkkilinnan."],
+	"city": ["KAUPUNKI! Apinat ovat vallanneet kadut.", "Lasiset (jää) ikkunat särkyvät helposti, betoni (kivi) ei."],
+	"castle": ["LINNA! Paksut kivimuurit kestävät paljon.", "Pommibanaanit ja painava banaani ovat täällä parhaita."],
+	"paris": ["PARIISI! Ooh là là – apinat lomailevat.", "Kevyet kahvilarakennelmat kaatuvat hyvällä osumalla."],
 	"space": ["AVARUUS! Ei maata – vain asteroideja ja planeettoja.", "Sininen planeetta vetää ammusta puoleensa, punainen työntää."],
 	"apocalypse": ["APOKALYPSI! Saaret leijuvat tyhjyyden yllä.", "Kaada apinat saaren reunan yli – ne putoavat syvyyteen."],
 	"beach": ["RANTA! Puiset rantamajat hajoavat helposti.", "Etsi rakennelman heikko kohta ja kaada se apinoiden päälle."],
@@ -854,7 +879,115 @@ func _compose(root: Node, n: int) -> String:
 		_well(root, _rng.randf_range(-1.0, 2.0), _rng.randf_range(5.0, 6.5), 9.0, 6.5, 1.3, Color(0.35, 0.6, 1.0))
 		_well(root, _rng.randf_range(5.5, 8.0), _rng.randf_range(7.5, 8.5), -8.0, 4.5, 1.0, Color(1.0, 0.35, 0.3))
 
-	return _ammo_for(is_boss)
+	return _smart_ammo(root, n, boss_scene)
+
+
+## Valitsee kenttään sopivat banaanit kentän sisällön perusteella, jotta jokainen taso on
+## läpäistävissä:
+##   - laukauksia vähintään apinoiden määrä + varalaukaus (+ panssaroiduille lisää)
+##   - paljon kiveä -> painava ja pommibanaanit
+##   - korkealla olevat apinat -> pommittaja (pudottaa pommin ylhäältä)
+##   - monta apinaa leveällä alueella -> jakautuva
+##   - kaukana olevat -> nopea, muurien takana maassa -> kimpoava
+##   - pomo: pommibanaaneja HP:n mukaan
+## Vain jo esitellyt banaanit käytetään. Esittelykentässä uusi banaani on toisena.
+func _smart_ammo(root: Node, n: int, boss_scene: String) -> String:
+	var enemies := 0
+	var armored := 0
+	var high := 0
+	var far := 0
+	var low_behind := 0
+	var min_x := INF
+	var max_x := -INF
+	var holder := root.get_node_or_null("Enemies")
+	if holder != null:
+		for e in holder.get_children():
+			if e.name == "Boss":
+				continue
+			enemies += 1
+			var p: Vector3 = (e as Node3D).position
+			min_x = minf(min_x, p.x)
+			max_x = maxf(max_x, p.x)
+			if float(e.get("min_hit_strength")) > 0.0:
+				armored += 1
+			if p.y > 3.2:
+				high += 1
+			if p.x > 12.0:
+				far += 1
+			if p.y < 1.0:
+				low_behind += 1
+	var stone := int(_counts.get("stone", 0))
+	var ice := int(_counts.get("ice", 0))
+	var blocks := stone + ice + int(_counts.get("wood", 0))
+	var dyn := int(_counts.get("Dynamite", 0))
+	var boss_hp := 0
+	if boss_scene != "":
+		var b := (load(boss_scene) as PackedScene).instantiate()
+		boss_hp = int(b.get("max_health"))
+		b.free()
+
+	var unlocked := {"e": true}
+	var intro := ""
+	for spec in SPECIAL_CHARACTERS:
+		if n >= int(spec[1]):
+			unlocked[spec[0]] = true
+		if n == int(spec[1]):
+			intro = spec[0]
+	var pick := func(letter: String, fallback: String) -> String:
+		return letter if unlocked.has(letter) else fallback
+
+	var specials: Array[String] = []
+	if stone >= 4:
+		specials.append(pick.call("h", "e"))
+	if stone >= 7 or armored >= 2:
+		specials.append("e")
+	if high >= 1:
+		specials.append(pick.call("b", "e"))
+	if enemies >= 3 and max_x - min_x > 4.5:
+		specials.append(pick.call("p", "n"))
+	if far >= 1:
+		specials.append(pick.call("s", "n"))
+	if low_behind >= 2 and blocks >= 6:
+		specials.append(pick.call("k", "n"))
+	if ice >= 4:
+		specials.append(pick.call("s", "n"))
+	if dyn == 0 and blocks >= 8:
+		specials.append("e")
+	if boss_hp > 0:
+		# Pommibanaani tekee pomoon n. 3-6 vahinkoa, suora osuma 1-2.
+		for i in ceili(float(boss_hp) / 4.0) + 1:
+			specials.append("e")
+		specials.append(pick.call("h", "e"))
+
+	# Varaa 2 ylimääräistä laukausta (autoplay-testi: häviöt jäivät 1-2 apinan päähän).
+	var shots := enemies + 2 + ceili(float(armored) / 2.0)
+	if enemies >= 4:
+		shots += 1
+	if boss_hp > 0:
+		shots = maxi(shots, enemies + 3) + specials.size()
+	shots = clampi(maxi(shots, specials.size() + 3), 4, 12)
+
+	var queue: Array[String] = ["n"]
+	if intro != "":
+		queue.append(intro)
+	for sp in specials:
+		if queue.size() >= shots:
+			break
+		queue.append(sp)
+	while queue.size() < shots:
+		queue.append("n")
+	# Erikoisbanaanit tasaisesti jonoon (ensimmäinen ja esittelybanaani pysyvät paikallaan).
+	var fixed := 2 if intro != "" else 1
+	var rest := queue.slice(fixed)
+	var mixed: Array[String] = queue.slice(0, fixed)
+	var normals := rest.filter(func(c: String) -> bool: return c == "n")
+	var others := rest.filter(func(c: String) -> bool: return c != "n")
+	while not normals.is_empty() or not others.is_empty():
+		if not others.is_empty():
+			mixed.append(others.pop_front())
+		if not normals.is_empty():
+			mixed.append(normals.pop_front())
+	return "".join(mixed)
 
 
 ## Pomokentät: jokaisella pomolla oma puolustusrakennelma (verkkosivun mukaan).
@@ -925,6 +1058,25 @@ func _compose_boss(root: Node, world_i: int, boss_scene: String) -> void:
 			_pf(root, 11.6, GY, 6.4)
 			_boss(root, boss_scene, 11.8, GY)
 			_dyn(root, 14.0, GY)
+		11:
+			# Rakennusapina: rakennustyömaa (kivi + teräspalkit putoavat lisää).
+			_arch(root, "wall", 3.0, g)
+			_arch(root, "tower", 5.6, g)
+			_boss(root, boss_scene, 11.6, g)
+			_dyn(root, 14.2, g)
+		12:
+			# Ritariapina: linnanmuuri ja vartiotorni.
+			_mats = ["stone"]
+			_arch(root, "keep", 2.2, g)
+			_arch(root, "wall", 6.4, g)
+			_mats = WORLD_MATERIALS["castle"]
+			_boss(root, boss_scene, 11.6, g)
+			_dyn(root, 9.2, g)
+		13:
+			# Taiteilija-apina: kahvila ja taidegalleria.
+			_arch(root, "hut", 2.4, g)
+			_arch(root, "tower", 6.2, g)
+			_boss(root, boss_scene, 11.8, g)
 		5:
 			# Apinakuningas: kelluvat kuninkaalliset saaret + painovoimamyrsky.
 			_pf(root, 4.0, 2.6, 4.2)

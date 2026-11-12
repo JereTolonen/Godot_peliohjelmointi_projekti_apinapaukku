@@ -223,6 +223,45 @@ const THEMES := {
 		"props": "apocalypse", "particles": "embers",
 		"crystal": Color("ffd64a"),
 	},
+	"city": {
+		"title": "Kaupunki",
+		"sky_top": Color("2a4f9e"), "sky_bottom": Color("ffb27a"), "sun_scatter": Color("8a4a30"),
+		"clouds": 0.3, "night": false,
+		"sun_color": Color("ffd0a0"), "sun_energy": 1.1, "sun_rot": Vector3(-25.0, 40.0, 0.0),
+		"ambient": Color("a8b4e0"), "ambient_energy": 0.6,
+		"fog": Color("d8a890"), "fog_density": 0.008,
+		"terrain": [Color("6a7080"), Color("8a90a0"), Color("4a4e58"), Color("3a3d46"), Color("22242a"), Color("ffd64a")],
+		"water": [Color("2a4a6e"), Color("6a8ab0"), 0.0],
+		"hills": [Color("4a5878"), Color("5a6888"), Color("7a88a8")],
+		"mountains": false,
+		"props": "city", "particles": "dust",
+	},
+	"castle": {
+		"title": "Linna",
+		"sky_top": Color("4a7ac8"), "sky_bottom": Color("d8e4f0"), "sun_scatter": Color("5a5040"),
+		"clouds": 0.55, "night": false,
+		"sun_color": Color("fff0d8"), "sun_energy": 1.15, "sun_rot": Vector3(-40.0, 30.0, 0.0),
+		"ambient": Color("b0c4e0"), "ambient_energy": 0.7,
+		"fog": Color("c8d4e0"), "fog_density": 0.009,
+		"terrain": [Color("5aa040"), Color("7ac050"), Color("8a8478"), Color("6a6458"), Color("3a3630"), Color("d8c8a0")],
+		"water": [Color("2a6a8e"), Color("5ab0c8"), 0.0],
+		"hills": [Color("5a9a48"), Color("7ab060"), Color("a0c0b0")],
+		"mountains": true,
+		"props": "castle", "particles": "leaves",
+	},
+	"paris": {
+		"title": "Pariisi",
+		"sky_top": Color("5a7ad8"), "sky_bottom": Color("ffd0c8"), "sun_scatter": Color("a05a5a"),
+		"clouds": 0.35, "night": false,
+		"sun_color": Color("ffe0c8"), "sun_energy": 1.2, "sun_rot": Vector3(-32.0, 38.0, 0.0),
+		"ambient": Color("d0b8e0"), "ambient_energy": 0.7,
+		"fog": Color("f0d0d0"), "fog_density": 0.007,
+		"terrain": [Color("6aa848"), Color("8ac860"), Color("c8b898"), Color("a89878"), Color("5a4a38"), Color("f0e0c0")],
+		"water": [Color("3a6a9e"), Color("8ab8e0"), 0.0],
+		"hills": [Color("9aa8c8"), Color("b0bcd8"), Color("d0d4e8")],
+		"mountains": false,
+		"props": "paris", "particles": "pollen",
+	},
 	"skyislands": {
 		"title": "Taivaansaaret",
 		"sky_top": Color("2a6fe0"), "sky_bottom": Color("8cc8ff"), "sun_scatter": Color("504838"),
@@ -252,7 +291,10 @@ const WORLDS := [
 	{"title": "AURINKORANTA", "subtitle": "Tasot 71–80", "from": 70, "to": 80, "color": Color("ffc12e"), "edge": Color("c0700c"), "theme": "beach", "boss": "MERIROSVOAPINA"},
 	{"title": "KRISTALLILUOLA", "subtitle": "Tasot 81–90", "from": 80, "to": 90, "color": Color("4fc6d8"), "edge": Color("1f6a7a"), "theme": "cave", "boss": "KRISTALLIAPINA"},
 	{"title": "EKSOPLANEETTA", "subtitle": "Tasot 91–100", "from": 90, "to": 100, "color": Color("c27cf0"), "edge": Color("6a2aa0"), "theme": "exoplanet", "boss": "MUUKALAISAPINA"},
-	{"title": "TAIVAANSAARET", "subtitle": "Tasot 101–110", "from": 100, "to": 1000, "color": Color("5fb3ff"), "edge": Color("2a5fa8"), "theme": "skyislands", "boss": "MYRSKYAPINA"},
+	{"title": "TAIVAANSAARET", "subtitle": "Tasot 101–110", "from": 100, "to": 110, "color": Color("5fb3ff"), "edge": Color("2a5fa8"), "theme": "skyislands", "boss": "MYRSKYAPINA"},
+	{"title": "KAUPUNKI", "subtitle": "Tasot 111–120", "from": 110, "to": 120, "color": Color("5a6a8a"), "edge": Color("2a3450"), "theme": "city", "boss": "RAKENNUSAPINA"},
+	{"title": "LINNA", "subtitle": "Tasot 121–130", "from": 120, "to": 130, "color": Color("8a8478"), "edge": Color("4a463e"), "theme": "castle", "boss": "RITARIAPINA"},
+	{"title": "PARIISI", "subtitle": "Tasot 131–140", "from": 130, "to": 1000, "color": Color("ff8ab0"), "edge": Color("b04a70"), "theme": "paris", "boss": "TAITEILIJA-APINA"},
 ]
 
 ## Tasojen nimet (pelin verkkosivun mukaan), indeksi = tason numero - 1.
@@ -284,6 +326,15 @@ const LEVEL_NAMES := [
 	# Taivaansaaret 101-110
 	"Pilvien päällä", "Leijuvat saaret", "Tuulen tie", "Sateenkaaren pää", "Ukkospilvi",
 	"Taivaan majakka", "Pudotus", "Pilvilinna", "Myrskyn silmä yllä", "MYRSKYAPINA",
+	# Kaupunki 111-120
+	"Ruuhkatunti", "Kattoterassi", "Rakennustyömaa", "Metroasema", "Kauppakatu",
+	"Pilvenpiirtäjä", "Puistonpenkki", "Neonvalot", "Torninosturi", "RAKENNUSAPINA",
+	# Linna 121-130
+	"Vallihauta", "Laskusilta", "Linnanpiha", "Vartiotorni", "Asehuone",
+	"Ritarisali", "Vankityrmä", "Kuninkaan puutarha", "Linnan katto", "RITARIAPINA",
+	# Pariisi 131-140
+	"Seinen ranta", "Kahvila kulmassa", "Riemukaari", "Taiteilijamäki", "Croissanttikauppa",
+	"Notre-Damen kellot", "Louvren pyramidi", "Puistojen kaupunki", "Eiffel-tornin juurella", "TAITEILIJA-APINA",
 ]
 
 
@@ -448,6 +499,33 @@ const LIGHTING := {
 		"glow": [0.9, 0.11, 0.95],
 		"grade": [Color("1a0b2e"), Color("fff0d8")],
 	},
+	"city": {
+		"mood": "Kaupungin iltarusko",
+		"key": [Color("ffc890"), 1.2, Vector3(-22.0, 45.0, 0.0)],
+		"fill": [Color("6a8aff"), 0.45, Vector3(-10.0, -120.0, 0.0)],
+		"rim": [Color("ff9a5a"), 1.05, Vector3(-15.0, 165.0, 0.0)],
+		"exposure": 1.0, "saturation": 1.15, "contrast": 1.1,
+		"glow": [0.75, 0.09, 1.0],
+		"grade": [Color("1a2448"), Color("fff0e0")],
+	},
+	"castle": {
+		"mood": "Ritarien aamu",
+		"key": [Color("fff0d0"), 1.25, Vector3(-40.0, 30.0, 0.0)],
+		"fill": [Color("8aa8e0"), 0.4, Vector3(-12.0, -125.0, 0.0)],
+		"rim": [Color("ffe0a0"), 0.9, Vector3(-20.0, 165.0, 0.0)],
+		"exposure": 1.0, "saturation": 1.1, "contrast": 1.08,
+		"glow": [0.5, 0.06, 1.2],
+		"grade": [Color("1c2a40"), Color("fff4e0")],
+	},
+	"paris": {
+		"mood": "Romanttinen iltapäivä",
+		"key": [Color("ffd8c0"), 1.25, Vector3(-30.0, 40.0, 0.0)],
+		"fill": [Color("b08aff"), 0.45, Vector3(-10.0, -120.0, 0.0)],
+		"rim": [Color("ffb0c8"), 1.0, Vector3(-18.0, 165.0, 0.0)],
+		"exposure": 1.02, "saturation": 1.15, "contrast": 1.05,
+		"glow": [0.65, 0.08, 1.05],
+		"grade": [Color("2a1a40"), Color("fff0f0")],
+	},
 	"skyislands": {
 		"mood": "Pastellinen unelma",
 		"key": [Color("fff0d8"), 1.2, Vector3(-38.0, 30.0, 0.0)],
@@ -510,7 +588,13 @@ static func theme_for_level(number: int, _ground: String = "") -> String:
 		return "cave"
 	if number <= 100:
 		return "exoplanet"
-	return "skyislands"
+	if number <= 110:
+		return "skyislands"
+	if number <= 120:
+		return "city"
+	if number <= 130:
+		return "castle"
+	return "paris"
 
 
 static func world_for_level(index: int) -> Dictionary:
