@@ -13,18 +13,22 @@ config_version=5
 config/name="Apinapaukku"
 run/main_scene="uid://dhd4qwbsw6ds0"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/show_image=false
+boot_splash/image="uid://b05cwyagurxgu"
+config/icon="uid://di3bo55cuy52y"
 
 [autoload]
 
-MCPRuntimeServer="*res://addons/godot_mcp_toolkit/runtime/mcp_runtime_server.gd"
 VisualDirector="*uid://66fgucqbgu1e"
 SoundManager="*uid://cf1ex30mcy0n1"
+MCPRuntimeServer="*res://addons/godot_mcp_toolkit/runtime/mcp_runtime_server.gd"
 
 [display]
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/vsync/vsync_mode=0
 
 [editor_plugins]
 
@@ -38,3 +42,7 @@ enabled=PackedStringArray("res://addons/godot_mcp_toolkit/plugin.cfg")
 
 rendering_device/driver.windows="d3d12"
 textures/vram_compression/import_etc2_astc=true
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=0
+lights_and_shadows/positional_shadow/soft_shadow_filter_quality=0
+2d/shadow_atlas/size=1024
+anti_aliasing/screen_space_roughness_limiter/enabled=false

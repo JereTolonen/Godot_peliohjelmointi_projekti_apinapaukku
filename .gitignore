@@ -4,3 +4,5 @@
 /addons/
 *.zip
 *.tar.gz
+/output/
+/tools/
